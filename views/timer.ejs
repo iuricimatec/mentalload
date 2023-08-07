@@ -1,0 +1,48 @@
+
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <title>Timer Example</title>
+    <style>
+        #timer {
+            font-size: 24px;
+            font-weight: bold;
+        }
+    </style>
+    <script>
+        let timerInterval;
+let timerDurationInSeconds = 0;
+
+function updateTimerDisplay() {
+  const displayElement = document.getElementById('timer');
+  const minutes = Math.floor(timerDurationInSeconds / 60);
+  const seconds = timerDurationInSeconds % 60;
+  displayElement.textContent = `${String(minutes).padStart(2, '0')}:${String(seconds).padStart(2, '0')}`;
+}
+
+function startTimer() {
+  clearInterval(timerInterval);
+  timerDurationInSeconds = 0;
+  updateTimerDisplay();
+
+  timerInterval = setInterval(function () {
+    timerDurationInSeconds++;
+    updateTimerDisplay();
+  }, 1000);
+}
+
+function stopTimer() {
+  clearInterval(timerInterval);
+}
+
+    </script>
+</head>
+<body>
+    <div id="timer">00:00:00</div>
+    <button onclick="startTimer()">Start</button>
+    <button onclick="stopTimer()">Stop</button>
+
+   
+</body>
+</html>

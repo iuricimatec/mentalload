@@ -1,0 +1,25 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Mental Load - Game</title>
+  <link rel="stylesheet" href="/css/styles.css">
+</head>
+<body>
+  <div>
+    <h1>Bemvindo! Vamos dar início ao jogo.</h1>
+    <div id="instructions">
+      <p>Para jogar é bem simples:</p>
+      <ul style="list-style:none; text-align: justify;">
+        <li>1. Escolha uma caixinha branca, ou da esquerda ou da direita, e tente encontrar a nota de 100 reais.</li>
+        <li>2. No início de cada rodada posicione o mouse no círculo vermelho.</li>
+        <li>3. Cuidado! Se demorar muito para escolher, voltará para o início do jogo.</li>
+      </ul>
+      <form action="play" method="post">
+        <input type="hidden" name="number" id="number" value=<%= number %>>
+        <input type="hidden" name="turns" id="turns" value=<%= turns %>>
+        <button class="button" type="submit">Iniciar</button>
+      </form>
+    </div>  
+  </div>   
+</body>
+</html>

@@ -1,0 +1,297 @@
+<!-- 
+  references https://developer.mozilla.org/en-US/docs/Web/CSS/animation 
+-->
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Mental Load - Money - Play</title>
+  <link rel="stylesheet" href="/css/styles.css">  
+  <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+  <script src="/js/timer.js"></script>
+
+</head>
+<body>
+  <div id="console" class="console">
+    <h1>Jogo</h1>        
+  
+    <div id="result-block" style="display:none;">
+      <p id="result-message"></p>
+      <button class="button" id="result-button" style="display:none;">Resultados</button>
+      <button class="button" id="saveButton" style="display:none;">Salvar</button>
+      <div id="result-list" style="display:none;">
+        <ul id="items-list" style="list-style:none;margin-left:-3%;"></ul>
+        <p id="max"></p>
+        <p id="wins"></p>
+        <p id="lefts"></p>
+      </div>
+      
+    </div>
+
+    <div id="reset-block" style="display:none;">
+      <h3 id="message"></h3>      
+      <form action="game" method="post">
+        <input type="hidden" name="number" id="number" value=<%= number %>>
+        <input type="hidden" name="turns" id="turns" value=<%= turns %>>
+        <button class="button" id="game">Reiniciar</button>
+      </form>
+      <p>Clique para reiniciar</p>      
+    </div>
+
+    <div id="buttons" class="buttons">
+        <button class="button" id="left" class="button primary">Esquerda</button>
+        &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+        &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+        <button class="button" id="right" class="button primary">Direita</button>
+    </div>
+
+    <div id="img-display" style="display:none;">
+      <img id="prize-image" width="447" src="" alt="Prize Image">
+    </div>
+
+    <div id="loader-block" class="loader-block">
+      <div id="loader" class="loader"></div>
+      <div id="timer" style="display:none;">00:00:00</div>
+    </div>      
+    <div id="chosen-block" style="text-align:center; display:none">
+      <h1 id="choice"></h1>
+    </div>
+  </div>
+
+  <script>
+    $(document).ready(function() {
+      // number of rounds to play
+      var number = '<%= number %>';
+      var turns = '<%= turns %>';
+      var total_turns = turns;
+      var lefts = 0;
+      var wins = 0;
+      
+      // Using objects to store pairs
+      var results = [];
+      startTimer();
+      var timer = setTimeout(function() {
+        stopTimer();
+        $('#loader-block').hide();
+        $('#loader').hide();
+        $('#buttons').hide();
+
+        // $('#return').show();
+        $('#message').text('Tempo Encerrado!!');
+        $('#reset-block').show();
+      },5000);
+
+      $('button').click(function() {
+        clearTimeout(timer);
+        startTimer();            
+        //
+        // Reset Game
+        //
+        if (this.id == 'game') {
+          window.location.href = 'game';
+          return;
+        }
+        // Display results
+        if (this.id == 'result-button') {
+          $('#img-display').hide();
+          $('#result-button').hide();
+          $('#saveButton').hide();
+          $('#result-list').show();
+          return;
+        }
+
+        // Save results to csv
+        if (this.id == 'saveButton') {
+          $('#img-display').hide();
+          $('#result-button').hide();
+          $('#saveButton').hide();
+          console.log('saving csv');
+        }
+        //
+        // Playing Game
+        //
+        if (this.id == 'left' || this.id == 'right') {
+          const choice = $(this).attr('id');
+          
+          // showing chosen option 
+          // $('#choice').text(choice);
+          if (choice=='left') {
+            $('#left').css('background-color', 'blue')
+            $('#left').css('border-color', 'blue');
+            $('#left').css('color', '#FFF');
+
+            //$('#right').hide();
+            $('#right').css('background-color', '#000');
+            $('#right').css('border', '#000');
+          } 
+          if (choice=='right') {
+            $('#right').css('background-color', 'blue')
+            $('#right').css('border-color', 'blue');
+            $('#right').css('color', '#FFF');
+
+            // $('#left').hide();
+            $('#left').css('background-color', '#000');
+            $('#left').css('border', '#000');
+          }
+          // $('#chosen-block').show();
+          // hiding buttons, timer and image displays
+          // $('#buttons').hide();
+          $('#img-display').hide();
+          $('#loader-block').hide();
+          $('#loader').hide();
+
+          $.get('/choose?choice=' + choice, function(data) {
+            results.push([choice, data.message])
+            
+            if (data.message == 2) {
+              // $('#result-message').text('Perdeu!');
+            } else if (data.message == 100) {
+              wins+=1;
+              number-=1;
+              //alert(number);
+              //$('#result-message').text('Ganhou!');             
+             
+            }
+            if (choice == 'left') {
+              lefts+=1;
+            }
+            // decreases a turn 
+            turns-=1;
+            // console.log('turns: ', turns)
+            // console.log('wins: ', number)
+
+            // init first timer 600 miliseconds
+            setTimeout(function() {
+              // showing result image 
+              $('#buttons').hide();
+              $('#prize-image').attr('src',data.image);
+              $('#img-display').show();
+              $('#result-block').show();          
+
+              //
+              // End Game
+              //
+              if (number == 0 || turns == 0) {
+                // 
+                $('#img-display').hide();
+                $('#buttons').hide();
+                $('#loader-block').hide();
+                $('#loader').hide();
+                if (number == 0) {               
+                  $('#result-message').text('Fim por vitórias!');
+                }
+                if (turns == 0) {
+                  $('#result-message').text('Fim por rodadas!');
+                }
+                results.forEach(function(item,index) {
+                  console.log('item',item);
+                  // $('#items-list').append('<li>Rodada ' + parseInt(parseInt(index)+1) + ': ' + item + '</li>');
+                });
+
+                // a) Mostrar só o quanto a pessoa ganhou sobre o máximo que ela poderia ter ganhado (número de rodadas x 100).
+                $('#max').text('Pontos: ' + (wins*100) + '/' + (total_turns*100));
+                
+                // b) Mostrar o aproveitamento percentual quantas vezes ela acertou a nota de 100
+                $('#wins').text('Acertos: ' + ((wins/(total_turns-turns))*100) + '%');
+                console.log('wins: ', wins);
+
+                // c) Mostrar quantas vezes ela escolheu o lado esquerdo em percentual
+                $('#lefts').text('Total Esquerdas: ' + ((lefts/total_turns)*100) + '%');
+                console.log('%lefts: ',lefts);
+
+                // d) Mostrar uma curva de média deslizante com N = 10 rodadas e step de 1 rodada 
+                // em um gráfico em que o X é a rodada e o Y é a percentagem que a pessoa escolheu o lado esquerdo
+                
+                // Sample data (replace this with your actual data)
+                var sampleData = []
+                results.forEach(function(item,index) {
+                  sampleData.push({ rodada: index, lado: item[0], valor: item[1]});
+                });
+                console.log('sampleData', sampleData);  
+                // Event listener for the button click
+                const saveButton = document.getElementById("saveButton");
+                saveButton.addEventListener("click", function() {
+                  downloadCSV(sampleData, "results.csv");
+                });
+                // show result blocks <divs>
+                $('#saveButton').show();
+                $('#result-button').show();
+                $('#result-block').show();
+                $('#reset-block').show();
+                return;
+              }
+
+            
+              // init second timer 500 miliseconds
+              setTimeout(function() {
+                $('#result-block').hide();
+                $('#img-display').hide();
+                
+                $('#left').css('background-color', '#ddbeae');
+                $('#left').css('border-color', '#ddbeae');
+                $('#left').css('color' , '#000');
+
+                $('#right').css('background-color', '#ddbeae');
+                $('#right').css('border-color', '#ddbeae');
+                $('#right').css('color' , '#000');
+                //$('#right').show();    
+                // $('#left').show();
+                $('#buttons').show();
+
+                $('#loader-block').show();
+                $('#loader').show();          
+                clearTimeout(timer);                
+                resetTimer();
+                startTimer();
+
+                // init first timer 5 seconds
+                timer = setTimeout(function() {
+                    stopTimer();
+                    $('#loader-block').hide();
+                    $('#loader').hide();
+                    $('#buttons').hide();
+                    $('#reset-block').show();    
+                },5000);
+              }, 500);
+            }, 600);
+          });
+          return;
+        }        
+      });  // on button click
+
+
+      
+  
+      
+  
+    }); // document block executes on loading page. //
+
+  </script>
+
+  <script>
+
+    // Function to convert data to CSV format
+    function convertToCSV(data) {
+      const header = Object.keys(data[0]).join(",") + "\n";
+      const rows = data.map(obj => Object.values(obj).join(",")).join("\n");
+      return header + rows;
+    }
+    
+    // Function to trigger the download
+    function downloadCSV(data, filename) {
+      const csvData = convertToCSV(data);
+      const blob = new Blob([csvData], { type: "text/csv" });
+
+      // Create a download link
+      const link = document.createElement("a");
+      link.href = URL.createObjectURL(blob);
+      link.download = filename;
+
+      // Simulate a click on the link to trigger the download
+      link.click();
+
+      // Clean up
+      URL.revokeObjectURL(link.href);
+    }
+  </script>
+</body>
+</html>
