@@ -93,6 +93,7 @@
         // Display results
         if (this.id == 'result-button') {
           $('#img-display').hide();
+          $('#prize-image').attr('src','');                
           $('#result-button').hide();
           $('#saveButton').hide();
           $('#result-list').show();
@@ -102,6 +103,7 @@
         // Save results to csv
         if (this.id == 'saveButton') {
           $('#img-display').hide();
+          $('#prize-image').attr('src','');                          
           $('#result-button').hide();
           $('#saveButton').hide();
           console.log('saving csv');
@@ -136,6 +138,7 @@
           // hiding buttons, timer and image displays
           // $('#buttons').hide();
           $('#img-display').hide();
+          $('#prize-image').attr('src','');                
           $('#loader-block').hide();
           $('#loader').hide();
 
@@ -173,6 +176,7 @@
               if (number == 0 || turns == 0) {
                 // 
                 $('#img-display').hide();
+                $('#prize-image').attr('src','');
                 $('#buttons').hide();
                 $('#loader-block').hide();
                 $('#loader').hide();
@@ -225,6 +229,7 @@
               setTimeout(function() {
                 $('#result-block').hide();
                 $('#img-display').hide();
+                $('#prize-image').attr('src','');
                 
                 $('#left').css('background-color', '#ddbeae');
                 $('#left').css('border-color', '#ddbeae');
