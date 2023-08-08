@@ -23,6 +23,7 @@
         <p id="max"></p>
         <p id="wins"></p>
         <p id="lefts"></p>
+        <p id="interval"></p>
       </div>
       
     </div>
@@ -65,11 +66,15 @@
       var total_turns = turns;
       var lefts = 0;
       var wins = 0;
-      
+      var deltas = [];
+
       // Using objects to store pairs
       var results = [];
+      startTracking();
       startTimer();
-      var timer = setTimeout(function() {
+
+
+      var timeout = setTimeout(function() {
         stopTimer();
         $('#loader-block').hide();
         $('#loader').hide();
@@ -80,9 +85,17 @@
         $('#reset-block').show();
       },5000);
 
+      // console.log('timer1', timeout);
+
+
       $('button').click(function() {
-        clearTimeout(timer);
+        clearTimeout(timeout);
         startTimer();            
+
+        // collect data from time tracking 
+        stopTracking();
+        console.log('elapsed time', elapsedTime);        
+        deltas.push(elapsedTime);
         //
         // Reset Game
         //
@@ -111,9 +124,8 @@
         //
         // Playing Game
         //
-        if (this.id == 'left' || this.id == 'right') {
+        if (this.id == 'left' || this.id == 'right') {          
           const choice = $(this).attr('id');
-          
           // showing chosen option 
           // $('#choice').text(choice);
           if (choice=='left') {
@@ -202,13 +214,21 @@
                 $('#lefts').text('Total Esquerdas: ' + ((lefts/total_turns)*100) + '%');
                 console.log('%lefts: ',lefts);
 
-                // d) Mostrar uma curva de média deslizante com N = 10 rodadas e step de 1 rodada 
-                // em um gráfico em que o X é a rodada e o Y é a percentagem que a pessoa escolheu o lado esquerdo
-                
+                // d) Juntar os tempos de reação de cada rodada para dar o resultado no final
+                tot = 0
+                deltas.forEach(function(d) {
+                  tot+=d; 
+                });
+                $('#interval').text('Duração: ' + tot + 'milisegundos');
+
+                // e) Mostrar uma curva de média deslizante com N = 10 rodadas e step de 1 rodada 
+                // em um gráfico em que o X é a rodada e o Y é a percentagem que a pessoa escolheu o lado esquerdo                
+
+
                 // Sample data (replace this with your actual data)
                 var sampleData = []
                 results.forEach(function(item,index) {
-                  sampleData.push({ rodada: index, lado: item[0], valor: item[1]});
+                  sampleData.push({ rodada: index, lado: item[0], valor: item[1], duracao: deltas[index]});
                 });
                 console.log('sampleData', sampleData);  
                 // Event listener for the button click
@@ -244,12 +264,13 @@
 
                 $('#loader-block').show();
                 $('#loader').show();          
-                clearTimeout(timer);                
+                clearTimeout(timeout);                
                 resetTimer();
                 startTimer();
+                startTracking();
 
                 // init first timer 5 seconds
-                timer = setTimeout(function() {
+                timeout = setTimeout(function() {
                     stopTimer();
                     $('#loader-block').hide();
                     $('#loader').hide();
@@ -271,6 +292,8 @@
     }); // document block executes on loading page. //
 
   </script>
+
+  <script src="/js/tracking.js"></script>
 
   <script>
 
