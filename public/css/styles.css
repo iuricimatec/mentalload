@@ -36,8 +36,8 @@ label {
 	margin:0;
 }
 .button {
-	width:150px;
-	height:42px;
+	width:180px;
+	height:60px;
     display: inline-block;
     border: 1px solid #ddbeae;
 	background-color: #ddbeae;
@@ -49,6 +49,17 @@ label {
     text-decoration: none;
     transition: background-color 0.3s ease-in-out;
 }
+
+@media (max-width: 768px) {
+	/* Styles for screens smaller than 768px (typical mobile devices) */
+	.button {
+		width: 21vw; /* Adjust as needed for smaller screens */
+		height: 6vh;
+		padding: 3vh; /* Adjust as needed */
+	}
+}
+
+
 
 input {
 	height:18px;

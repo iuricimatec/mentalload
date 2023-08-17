@@ -3,6 +3,8 @@
 <head>
   <title>Mental Load - Game</title>
   <link rel="stylesheet" href="/css/styles.css">
+  <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+  
 </head>
 <body>
   <div>
@@ -15,11 +17,71 @@
         <li>3. Cuidado! Se demorar muito para escolher, voltará para o início do jogo.</li>
       </ul>
       <form action="play" method="post">
-        <input type="hidden" name="number" id="number" value=<%= number %>>
-        <input type="hidden" name="turns" id="turns" value=<%= turns %>>
+        <input type="hidden" name="turns" id="turns" value="<%= turns %>">
+        <input type="hidden" name="number" id="number" value="<%= number %>">
+        <input type="hidden" name="arr" id="arr" value="">
         <button class="button" type="submit">Iniciar</button>
       </form>
     </div>  
   </div>   
+  <script>
+    /*
+    @Daniel Gomes de Almeida Filho
+    tem ambiguidade na frase:
+    Insira o percentual de vezes que a nota de R$ 100 deverá aparecer do lado esquerdo.
+
+    Se 20% for atribuido ao percentual, então a nota de 100 reais deverá aparecer 20% das rodadas do lado esquerdo?
+
+
+
+    Como eu calculo o percentual de vezes?
+    Pelo codigo fonte no matlab o percentual refere-se ao pool, ao inves do numero de rodadas. Porque?
+
+    nBol pode ser  o numero de rodadas?? o que isso implica? caso ngativo, porque nao?
+
+    Ainda que nBol seja definido, necessitamos de um decisor.
+    apos o calculo de PErc2 e PErc100, que deve-se fazer?
+
+    como atribuir a nota de 100 à esquerda e/iu direita com base nos percentuais?
+    
+
+    */
+    $(document).ready(function() {
+      
+      const nBol = 1000 // '<%=turns%>';  // What is nBol??  it is defintely not turns
+      const percEsq = '<%=number%>'/100;
+      console.log('percEsq: ', percEsq);
+
+      const n100 = Math.round(nBol * percEsq);
+      console.log('n100: ', n100);
+
+      const n2 = nBol - n100;
+      console.log('n2: ', n2);
+
+      const idx = [2, 100];
+      const pool = new Array(n2).fill(idx[0]).concat(new Array(n100).fill(idx[1]));
+
+      console.log(pool.length);
+      console.log('pool', pool);
+
+      const rodadas = '<%=turns%>';
+      const esq = new Array(rodadas).fill(0);
+
+      for (let i = 0; i < rodadas; i++) {
+          const index = Math.floor(Math.random() * 1000);
+          esq[i] = pool[index];
+      }
+
+      const p2 = esq.filter(value => value === 2).length / rodadas;
+      const p100 = esq.filter(value => value === 100).length / rodadas;
+
+      console.log(p2, p100);
+      console.log('esq', esq);
+      $('#p2').val(p2);
+      $('#p100').val(p100);
+      $('#arr').val(esq);
+
+    });
+  </script>
 </body>
 </html>
