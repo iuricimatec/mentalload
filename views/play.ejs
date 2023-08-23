@@ -18,7 +18,7 @@ nBol tem que ser  o numero de rodadas
 <!DOCTYPE html>
 <html>
 <head>
-  <title>Mental Load - Money - Play</title>
+  <title>Carga Mental - Play</title>
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta2/css/all.min.css" integrity="sha512-YWzhKL2whUzgiheMoBFwW8CKV4qpHQAEuvilg9FAn5VJUDwKZZxkJNuGM4XkWuk94WCrrwslk8yWNGmY1EduTA==" crossorigin="anonymous" referrerpolicy="no-referrer" />
   <link rel="stylesheet" href="/css/styles.css">  
@@ -27,7 +27,7 @@ nBol tem que ser  o numero de rodadas
 
 </head>
 <body>
-  <div id="console" class="console">
+  <div id="container" class="container">
     <h1>Jogo</h1>        
   
     <div id="result-block" style="display:none;">
@@ -48,33 +48,44 @@ nBol tem que ser  o numero de rodadas
       <form action="game" method="post">
         <input type="hidden" name="number" id="number" value=<%= number %>>
         <input type="hidden" name="turns" id="turns" value=<%= turns %>>
-        <button class="button" id="game">Reiniciar</button>
+        <button class="button" id="game"><i class="fa-solid fa-play" style="font-size:xx-large; color: #000000;"></i></button>
       </form>
       <p>Clique para reiniciar</p>      
     </div>
 
     <div id="buttons" class="buttons">
-        <button class="button" id="left" class="button primary">Esquerda</button>
-        &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
-        &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
-        <button class="button" id="right" class="button primary">Direita</button>
+        <button class="button" id="left" class="button primary"><i class="fa-solid fa-backward" style="font-size:xx-large; color: #000000;"></i></button>
+        <button class="button" id="right" class="button primary"><i class="fa-solid fa-forward" style="font-size:xx-large; color: #000000;"></i></button>
     </div>
 
-    <div id="img-display" style="display:none;">
-      <img id="prize-image" width="447" src="" alt="Prize Image">
+    <div id="img-display" class="image-container" style="display:none;">
+      <img id="prize-image" width="447" src="/images/prize.jpeg" alt="Prize Image" style="display:none;">
+      <img id="no-prize-image" width="447" src="/images/no-prize.jpeg" alt="No Prize Image" style="display:none;">
     </div>
 
     <div id="loader-block" class="loader-block">
-      <div id="loader" class="loader"></div>
-      <div id="timer" style="display:none;">00:00:00</div>
+     <div id="timer" style="color:white;">00:00:00</div>
+     <text x="100" y="100" text-anchor="middle" style="display:none;"><tspan id="timeLeft"></tspan></text>
+
+      <div class="timer animatable">
+      <svg>
+        <circle cx="50" cy="50" r="33"/>
+        <circle cx="50" cy="50" r="33" pathLength="1" />
+      </svg>
+      </div>
     </div>      
+   
+
+
     <div id="chosen-block" style="text-align:center; display:none">
       <h1 id="choice"></h1>
     </div>
+
   </div>
 
   <script>
     $(document).ready(function() {
+      
       // number of rounds to play
       const arr = '<%= arr %>'.split(',');
       const number = '<%= number %>';
@@ -99,7 +110,6 @@ nBol tem que ser  o numero de rodadas
       var timeout = setTimeout(function() {
         stopTimer();
         $('#loader-block').hide();
-        $('#loader').hide();
         $('#buttons').hide();
 
         // $('#return').show();
@@ -129,7 +139,6 @@ nBol tem que ser  o numero de rodadas
         // Display results
         if (this.id == 'result-button') {
           $('#img-display').hide();
-          $('#prize-image').attr('src','');                
           $('#result-button').hide();
           //$('#saveButton').hide();
           $('#result-list').show();
@@ -139,19 +148,17 @@ nBol tem que ser  o numero de rodadas
         // Save results to csv
         if (this.id == 'saveButton') {
           $('#img-display').hide();
-          $('#prize-image').attr('src','');                          
-          $('#result-button').hide();
-          $('#saveButton').hide();
-          console.log('saving csv');
+          // console.log('saving csv');
         }
         //
         // Playing Game
         //
         if (this.id == 'left' || this.id == 'right') {                    
           const choice = $(this).attr('id');
-          console.log('choice:', choice);
+          // console.log('choice:', choice);
           
-
+          // hide and reset clock
+          $('#loader-block').hide();
 
           // showing chosen option 
           // $('#choice').text(choice);
@@ -168,66 +175,49 @@ nBol tem que ser  o numero de rodadas
             lefts+=1;
 
             if (arr[turn-1] == 2) {
-              // $('#result-message').text('Perdeu!');
-              image = '/images/no-prize.jpeg';
               results.push([choice, 2])
             } else if (arr[turn-1] == 100) {
-              image = '/images/prize.jpeg';
               wins+=1;
-              results.push([choice, 100]);
-              //number-=1;
-              //alert(number);
-              //$('#result-message').text('Ganhou!');             
-              
+              results.push([choice, 100]);              
             }
           } 
           if (choice=='right') {
             $('#right').css('background-color', 'blue')
             $('#right').css('border-color', 'blue');
             $('#right').css('color', '#FFF');
-
-            // $('#left').hide();
             $('#left').css('background-color', '#000');
             $('#left').css('border', '#000');
 
-
-
             if (arr[turn-1] == 2) {
-              image = '/images/prize.jpeg';
               wins+=1;
               results.push([choice, 100]);
-              //number-=1;
-              //alert(number);
-              //$('#result-message').text('Ganhou!');             
             } else if (arr[turn-1] == 100) {
-              // $('#result-message').text('Perdeu!'); // 100 is not on left array
-              image = '/images/no-prize.jpeg'; 
               results.push([choice, 2])
             }
           }
-          // $('#chosen-block').show();
-          // hiding buttons, timer and image displays
-          // $('#buttons').hide();
           $('#img-display').hide();
-          $('#prize-image').attr('src','');                
-          $('#loader-block').hide();
-          $('#loader').hide();
-
-
-
-          
-          // $.get('/choose?choice=' + choice, function(data) {});
-          // console.log('turn: ', turn);
-          // console.log('arr: ', arr);
-          // console.log('arr:', arr[turn]);
-          
-         
+          $('#prize-image').hide();
+          $('#no-prize-image').hide();                     
 
           // init first timer 600 miliseconds
           setTimeout(function() {
             // showing result image 
             $('#buttons').hide();
-            $('#prize-image').attr('src',image);
+            // console.log('choice ', choice, ' arr[turn-1]: ', arr[turn-1]);
+            if (choice=='left') {         
+              if (arr[turn-1] == 2) {
+                $('#no-prize-image').show();
+              } else if (arr[turn-1] == 100) {
+                $('#prize-image').show();
+              }
+            }
+            if (choice=='right') {
+              if (arr[turn-1] == 2) {
+                $('#prize-image').show();
+              } else if (arr[turn-1] == 100) {
+                $('#no-prize-image').show();
+              }
+            }
             $('#img-display').show();
             $('#result-block').show();          
 
@@ -237,10 +227,10 @@ nBol tem que ser  o numero de rodadas
             if (turn-1 == turns) {
               // 
               $('#img-display').hide();
-              $('#prize-image').attr('src','');
+              $('#prize-image').hide();
+              $('#no-prize-image').hide();
               $('#buttons').hide();
               $('#loader-block').hide();
-              $('#loader').hide();
               $('#result-message').text('Fim de Jogo!');
               results.forEach(function(item,index) {
                 console.log('item',item);
@@ -293,7 +283,6 @@ nBol tem que ser  o numero de rodadas
             setTimeout(function() {
               $('#result-block').hide();
               $('#img-display').hide();
-              $('#prize-image').attr('src','');
               
               $('#left').css('background-color', '#ddbeae');
               $('#left').css('border-color', '#ddbeae');
@@ -307,7 +296,6 @@ nBol tem que ser  o numero de rodadas
               $('#buttons').show();
 
               $('#loader-block').show();
-              $('#loader').show();          
               clearTimeout(timeout);                
               resetTimer();
               startTimer();
@@ -317,7 +305,6 @@ nBol tem que ser  o numero de rodadas
               timeout = setTimeout(function() {
                   stopTimer();
                   $('#loader-block').hide();
-                  $('#loader').hide();
                   $('#buttons').hide();
                   $('#reset-block').show();    
               },5000);
@@ -327,18 +314,54 @@ nBol tem que ser  o numero de rodadas
           turn+=1;          
           return;
         }        
-      });  // on button click
-
-
-      
-  
-      
-  
+      });  // on button click  
     }); // document block executes on loading page. //
 
   </script>
 
   <script src="/js/tracking.js"></script>
+
+
+  <script>
+    //
+    // source code of timer animation;
+    //
+    let timeLeft = 5;
+    let timer = document.getElementById('timeLeft');
+
+    function isTimeLeft() {
+      return timeLeft > -1;
+    }
+
+    function stopTimer() {
+    }
+
+    function runTimer(timerElement) {
+      const timerCircle = timerElement.querySelector('svg > circle + circle');
+      timerElement.classList.add('animatable');
+      timerCircle.style.strokeDashoffset = 1;
+        
+      let countdownTimer = setInterval(function(){
+        if(isTimeLeft()){
+          const timeRemaining = timeLeft--;
+          const normalizedTime = (11 - timeRemaining) / 5;
+          // for clockwise animation
+          // const normalizedTime = (timeRemaining - 60) / 60;
+          // console.log('normalized' + normalizedTime);
+          timerCircle.style.strokeDashoffset = normalizedTime;
+          // console.log('timeRemaining: ', timeRemaining);
+          timer.innerHTML = timeRemaining;
+        } else {
+          clearInterval(countdownTimer);
+          timerElement.classList.remove('animatable');
+        }  
+      }, 1000);
+    }
+    console.log('timer: ', document.querySelector('.timer'));
+    runTimer(document.querySelector('.timer'));
+
+  </script>
+
 
   <script>
 

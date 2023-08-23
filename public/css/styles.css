@@ -3,29 +3,35 @@ body {
 	justify-content: center;
 	align-items: center;
 	margin: 0;
-	color:#ddbeae;
+	color: #FFF;
+	/* color:#ddbeae;*/
 	background-color: #000;
-	font-size: 23px;
+	font-size: 29px;
 	font-family: Arial, Helvetica, sans-serif;
 }
 
 
 
+.container {
+	padding: 10px;
+	height: 6vh;
+	
+}
 
 a:link {
-	color: #ddbeae;
+	/* color: #ddbeae; */
 	font-weight: bolder;
 }
 a:visited {
-	color: #9f5339;
+	/* color: #9f5339; */
 	font-weight: bolder;
 } 
 a:hover {
-	color: #a76e67;
+	/* color: #a76e67; */
 	font-weight: bolder;
 }
 a:active {
-	color: #ddbeae;
+	/* color: #ddbeae; */
 	font-weight: bolder;
 }
 
@@ -34,36 +40,61 @@ label {
 }
 .buttons {
 	margin:0;
+	display: flex;
+    justify-content: space-between; /* Distribute space between buttons */
+
 }
 .button {
-	width:180px;
-	height:60px;
+	width:160px;
+	height:120px;
     display: inline-block;
-    border: 1px solid #ddbeae;
-	background-color: #ddbeae;
+    /* border: 1px solid #ddbeae; */
+	/* background-color: #ddbeae; */
+	border: 1px solid #FFF;
+	background-color: #FFF;
     border-radius: 5px;
-    padding: 0px;
     cursor: pointer;
     font-size: 16px;
     color: #000;
     text-decoration: none;
     transition: background-color 0.3s ease-in-out;
+	padding: 20px;
+    cursor: pointer;
 }
 
 @media (max-width: 768px) {
 	/* Styles for screens smaller than 768px (typical mobile devices) */
 	.button {
-		width: 21vw; /* Adjust as needed for smaller screens */
-		height: 6vh;
-		padding: 3vh; /* Adjust as needed */
+		width: 27vw; /* Adjust as needed for smaller screens */
+		height: 9vh;
+		font-size: 14px;
+        padding: 8px 16px;
+	}
+
+
+	.loader-block {
+		margin: 10% 35% auto;	
 	}
 }
 
+/* Media query for extra small screens (e.g., small smartphones) */
+@media (max-width: 480px) {
+    .button {
+        font-size: 12px;
+        padding: 6px 12px;
+		width: 27vw; /* Adjust as needed for smaller screens */
+		height: 9vh;
+		padding: 8px 16px;
 
+    }
+	.loader-block {
+		margin: 10% 35% auto;	
+	}
+}
 
 input {
 	height:18px;
-	border: 1px solid #ddbeae;
+	border: 1px solid #FFF;
 	background-color: #FFF;   
     border-radius: 5px;
     padding: 10px 20px 10px;
@@ -73,9 +104,6 @@ input {
 }
 
 
-.console {
-    height: 36vh;
-}
 
 .result-block {
 	margin:0;
@@ -90,11 +118,24 @@ input {
 	margin:0;
     padding:20px;
 }
+.image-container {
+    max-width: 100%;
+    height: auto;
+    display: block; /* Removes any potential spacing issues */
+    margin: 0 auto; /* Center the image horizontally */
+}
+
+.image-container img {
+    max-width: 100%;
+    height: auto;
+}
 
 
 .loader-block {
 	text-align:center; 
-	margin: 18vh 47%;
+	position: relative;
+	margin: 0 45% auto;
+	
 }
 .loader {
 	border: 66px solid #f3f3f3;
@@ -103,8 +144,7 @@ input {
 	width: 1px;
 	height: 1px;
 	animation: spin 4.5s linear infinite;
-	margin-left:-36%
-
+	
 }
   
 
@@ -122,3 +162,39 @@ input {
 	100% { transform: rotate(360deg); }
 }
   
+
+
+
+
+
+
+
+.timer {
+    margin-top: 10px;
+}
+  
+.timer > svg {
+    width: 100px;
+    height: 100px;
+}
+
+.timer > svg > circle {
+    /* fill:#e74c3c; */
+	fill:none;
+	stroke-opacity: 0.3;
+    stroke: red;
+    stroke-width: 15;
+    transform-origin: center center;
+    transform: rotate(-90deg);
+}
+
+.timer > svg > circle + circle {
+    stroke-dasharray: 1;
+    stroke-dashoffset: 1;
+    stroke-linecap: round;
+    stroke-opacity: 1;
+}
+
+.timer.animatable > svg > circle + circle {
+    transition: stroke-dashoffset 0.3s ease;
+}
