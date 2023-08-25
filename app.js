@@ -13,8 +13,6 @@ app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
 
-let userAttempts = [];
-
 app.get('/', (req, res) => {
   res.render('index');
 });
@@ -31,76 +29,21 @@ app.get('/settings', (req, res) => {
 app.post('/game', (req, res) => {
   const number = req.body.number;
   const turns = req.body.turns;
-  console.log('turns: ',turns, 'number:', number);
-
-
-
-
-
   // It seems wrong to define the array of answers previously to the game. 
   // It sounds more reasonable/rational to calculate the array on every turn. 
   // As an action triggered by the user 
-
   res.render('game', {number, turns});
 });
 
 app.post('/play', (req, res) => {
   const arr = req.body.arr;
-  const number = req.body.number;
-  const turns = req.body.turns;
-
-  console.log('turns: ', turns)
-
-  res.render('play', {arr, turns, number});
+  res.render('play', arr);
 });
 
 app.get('/save', (req, res) => {
   res.render('save');
 });
 
-app.get('/timer', (req, res) => {
-  res.render('timer');
-});
-
-
-app.get('/choose', (req, res) => {
-  
-  const prizeButton = getRandomButton();
-  const userChoice = req.query.choice.toLowerCase();
-  // console.log(userChoice);
-  // console.log(prizeButton);
-     
-  let message, image;
-  if (userChoice === prizeButton) {
-    message = 100;
-    image = '/images/prize.jpeg';
-  } else {
-    message = 2;
-    image = '/images/no-prize.jpeg';
-
-  }
-
-  const attempt = { choice: userChoice, result: message };
-  userAttempts.push(attempt);
-
-  res.send({message, image});
-});
-
-
-
-
-app.get('/attempts', (req, res) => {
-    res.json(userAttempts);
-});
-
-
-function getRandomButton() {
-  return getRandomNumber() === 0 ? 'left' : 'right';
-}
-
-function getRandomNumber() {
-  return Math.floor(Math.random() * 2);
-}
 
 const port = 3000;
 app.listen(port, () => {
