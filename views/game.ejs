@@ -3,7 +3,7 @@
 <head>
   <title>Mental Load - Game</title>
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-
+  <link rel="icon" type="image/png" sizes="64x64" href="/icons8-brain-64.png">
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta2/css/all.min.css" integrity="sha512-YWzhKL2whUzgiheMoBFwW8CKV4qpHQAEuvilg9FAn5VJUDwKZZxkJNuGM4XkWuk94WCrrwslk8yWNGmY1EduTA==" crossorigin="anonymous" referrerpolicy="no-referrer" />
   <link rel="stylesheet" href="/css/styles.css">
   <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
@@ -20,9 +20,9 @@
         <li>3. Cuidado! Se demorar muito para escolher, voltará para o início do jogo.</li>
       </ul>
       <form action="play" method="post">
-        <input type="hidden" name="turns" id="turns" value="<%= turns %>">
-        <input type="hidden" name="number" id="number" value="<%= number %>">
         <input type="hidden" name="arr" id="arr" value="">
+        <input type="hidden" name="percentage" id="percentage" value="<%= percentage%>">
+        <input type="hidden" name="rounds" id="rounds" value="<%= rounds%>">      
         <button class="button" type="submit"><i class="fa-solid fa-play" style="font-size:xx-large; color: #000000;"></i></button>
       </form>
     </div>  
@@ -51,8 +51,11 @@
     */
     $(document).ready(function() {
       
-      const nBol = 1000 // '<%=turns%>';  // What is nBol??  it is defintely not turns
-      const percEsq = '<%=number%>'/100;
+      const nBol = 1000 // '<%=rounds%>';  // What is nBol??  it is defintely not turns. nBol must be big enough to allow most accuracy 
+      const percEsq = '<%=percentage%>'/100;
+      const rodadas = '<%=rounds%>';
+      const esq = new Array(rodadas).fill(0);
+
       console.log('percEsq: ', percEsq);
 
       const n100 = Math.round(nBol * percEsq);
@@ -67,9 +70,7 @@
       console.log(pool.length);
       console.log('pool', pool);
 
-      const rodadas = '<%=turns%>';
-      const esq = new Array(rodadas).fill(0);
-
+     
       for (let i = 0; i < rodadas; i++) {
           const index = Math.floor(Math.random() * 1000);
           esq[i] = pool[index];
