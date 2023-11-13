@@ -7,16 +7,18 @@
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta2/css/all.min.css" integrity="sha512-YWzhKL2whUzgiheMoBFwW8CKV4qpHQAEuvilg9FAn5VJUDwKZZxkJNuGM4XkWuk94WCrrwslk8yWNGmY1EduTA==" crossorigin="anonymous" referrerpolicy="no-referrer" />
   <link rel="stylesheet" href="/css/styles.css">  
   <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
-  <script src="/js/timer.js"></script>
-
 </head>
 <body>
   <div id="container" class="container">
-    <h1>Jogo</h1>        
+    <h1>Jogo</h1>
+
     <div id="result-block" style="display:none;">
       <p id="result-message"></p>
       <button class="button" id="result-button" style="display:none;"><i class="fa-solid fa-magnifying-glass" style="font-size:xx-large; color: #000000;"></i></button>
       <button class="button" id="saveButton" style="display:none;"><i class="fas fa-save" style="font-size:xx-large; color: #000000;"></i></button>
+
+
+
       <div id="result-list" style="display:none;">
         <ul id="items-list" style="list-style:none;margin-left:-3%;"></ul>
         <p id="max"></p>
@@ -24,6 +26,7 @@
         <p id="lefts"></p>
         <p id="interval"></p>
       </div>      
+
     </div>
 
     <div id="reset-block" style="display:none;">
@@ -31,22 +34,32 @@
       <form action="game" method="post">
         <input type="hidden" name="percentage" id="percentage" value="<%= percentage %>">        
         <input type="hidden" name="rounds" id="rounds" value="<%= rounds %>">      
+        <input type="hidden" name="timeReward" id="timeReward" value="<%= timeReward %>">      
         <button class="button" id="game"><i class="fa-solid fa-play" style="font-size:xx-large; color: #000000;"></i></button>
       </form>
       <p>Clique para reiniciar</p>      
     </div>
 
-    <div id="buttons" class="buttons">
+    <div id="play-console">
+      <p>Rodada: <span id="round">1</span> / 10</p>
+      <div id="buttons" class="buttons">
         <button class="button" id="left" class="button primary"></button>
         <button class="button" id="right" class="button primary"></button>
+      </div>
     </div>
-
+     
     <div id="img-display" class="image-container" style="display:none;">
-      <img id="prize-image" width="447" src="/images/prize.jpeg" alt="Prize Image" style="display:none;">
-      <img id="no-prize-image" width="447" src="/images/no-prize.jpeg" alt="No Prize Image" style="display:none;">
+      <img id="prize-image" width="447" src="/images/50reais.png" alt="Prize Image" style="display:none;">
+      <img id="no-prize-image" width="447" src="/images/5reais.png" alt="No Prize Image" style="display:none;">
     </div>
 
-    <div id="loader-block" class="loader-block">
+    <div id="chosen-block" style="text-align:center; display:none">
+      <h1 id="choice"></h1>
+    </div>
+
+    <div id="loader-block" class="loader-block" style="display:block;">
+      <p>Tempo Restante: <span id="timer">6</span> segundos</p>         
+    
      <div id="timer" style="color:white; display:none;">00:00:00</div>
      <text x="100" y="100" text-anchor="middle" style="display:none;"><tspan id="timeLeft"></tspan></text>
 
@@ -56,30 +69,221 @@
         <circle cx="50" cy="50" r="33" pathLength="1" />
       </svg>
       </div>
-    </div>      
-   
-
-
-    <div id="chosen-block" style="text-align:center; display:none">
-      <h1 id="choice"></h1>
     </div>
+   
 
   </div>
 
-  <script src="/js/tracking.js"></script>
-  <script src="/js/utils.js"></script>
   <script>
-    $(document).ready(function() {
-      const arr = '<%= arr %>'.split(',');
+    function resetCountdown(seconds) {
+      currentRound++;
+      secondsLeft = seconds;
+      // start timer
+      startCountdown();
+      // next round
+      document.getElementById('round').textContent = currentRound;
+    }
 
-     
-      console.log('timer2: ',document.querySelector('.timer'));
-      runTimer(document.querySelector('.timer'),false);
-      setTimeout(function() {
-        playGame(arr);
-      },500);
 
-    }); // document block executes on loading page. //
+    function startCountdown() {
+      const timerElement = document.getElementById('timer');
+      timerElement.textContent = secondsLeft;
+      countdownInterval = setInterval(function() {
+        secondsLeft--;
+        if (secondsLeft >= 0) {
+          timerElement.textContent = secondsLeft;
+        }
+        if (secondsLeft === 0) {
+          clearInterval(countdownInterval);
+          if (currentRound < 10) {
+            // currentRound++;
+            // document.getElementById('round').textContent = currentRound;
+            // secondsLeft = 6;
+            $('#loader-block').hide();
+            $('#buttons').hide();
+            $('#reset-block').show();    
+            // setTimeout(startCountdown, 1000); // Start the next round after a 1-second delay
+          } else {
+            document.getElementById('round').textContent = '10 (Game Over)';
+            timerElement.textContent = '0';
+          }
+        }
+      }, 1000);
+    }
+
+
   </script>
-  </body>
+
+
+  <script>
+
+
+   
+      let countdownInterval;
+      let currentRound = 1;
+      let secondsLeft = 6;
+      let timein = new Date();
+      const arr = '<%=arr%>'.split(',');
+      console.log('ARR ', arr, arr[1]);
+
+
+      // Using objects to store pairs
+      var results = [];
+      var wins = 0;
+      var lefts = 0;
+
+      startCountdown();
+
+
+      $('button').click(function() {
+        document.getElementById('timer');
+        //
+        // Reset Game
+        //
+        if (this.id == 'game') {
+          window.location.href = 'game';
+          return;
+        }
+
+        // Display results
+        if (this.id == 'result-button') {
+          console.log(timein,timeout);
+
+          $('#img-display').hide();
+          $('#result-button').hide();
+          //$('#saveButton').hide();
+          $('#result-list').show();
+          return;
+        }
+        
+        // Save results to csv
+        if (this.id == 'saveButton') {
+          $('#img-display').hide();
+          // console.log('saving csv');
+        }
+
+        //
+        // Playing Game
+        //
+        if (this.id == 'left' || this.id == 'right') {  
+
+
+          timeout = new Date();
+          console.log(timein,timeout)
+
+          $('#loader-block').hide();
+          
+          const choice = $(this).attr('id');   
+          ////////
+          // LEFT 
+          ////////
+          console.log('choice',choice);
+          $('#'+String(choice)).css('background-color', 'blue')
+          $('#'+String(choice)).css('border-color', 'blue');
+      
+          if (choice=='left') {        
+            //$('#right').hide();
+            $('#right').css('background-color', '#000');
+            $('#right').css('border', '#000');
+            lefts+=1;            
+            clearInterval(countdownInterval);
+            setTimeout(function() {
+              $('#left').css('background-color', '#FFF')
+              $('#left').css('border-color', '#FFF');
+              $('#right').css('background-color', '#FFF')
+              $('#right').css('border-color', '#FFF');
+              $('#buttons').hide();
+              $('#play-console').hide();
+
+              console.log('pos ', arr[currentRound-1], currentRound);
+          
+              if (arr[currentRound-1] == 0) {
+                results.push([choice, 5])
+                $('#no-prize-image').show();
+                $('#img-display').show();   
+                $('#prize-image').hide();          
+
+              } else if (arr[currentRound-1] == 1) {
+                wins+=1;
+                results.push([choice, 50]);              
+                $('#prize-image').show();
+                $('#img-display').show();
+                $('#no-prize-image').hide();
+              }         
+              
+              setTimeout(function() {
+                $('#img-display').hide(); 
+                $('#no-prize-image').hide();
+                $('#prize-image').hide();
+                             
+                $('#buttons').show();
+                $('#play-console').show();
+                $('#loader-block').show();
+
+                if (currentRound >= 10) {
+                  document.getElementById('round').textContent = '10 (Game Over)';
+                  secondsLeft = 0
+                  $('#buttons').hide();
+                  $('#play-console').hide();
+                  $('#loader-block').hide();
+                  $('#reset-block').show();
+                }
+
+                resetCountdown(6);            
+              }, 3000); // displays image for 3 secs.
+
+            },2000); // displays marked button for 2 secs.
+            
+          } 
+
+
+
+
+
+
+
+
+          //////////
+          //  RIGHT -> left mirrowed operation 
+          /////////
+          if (choice=='right') {
+            $('#left').css('background-color', '#000');
+            $('#left').css('border', '#000');
+
+            clearInterval(countdownInterval);
+            setTimeout(function() {
+              $('#left').css('background-color', '#FFF')
+              $('#left').css('border-color', '#FFF');
+              $('#right').css('background-color', '#FFF')
+              $('#right').css('border-color', '#FFF');
+
+              if (arr[currentRound-1] == 2) {
+                wins+=1;
+                results.push([choice, 100]);
+                $('#prize-image').show();
+              } else if (arr[currentRound-1] == 100) {
+                results.push([choice, 2])
+                $('#no-prize-image').show();
+              }
+
+             
+
+              resetCountdown(6);            
+            },2000);
+          }
+
+            // check results
+
+              // save trial
+
+            
+
+        }
+        return;
+      });
+
+
+
+  </script>
+</body>
 </html>

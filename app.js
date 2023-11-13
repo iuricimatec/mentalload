@@ -29,17 +29,19 @@ app.get('/settings', (req, res) => {
 app.post('/game', (req, res) => {
   const percentage = req.body.percentage;
   const rounds = req.body.rounds;
+  const timeReward = req.body.timeReward
   // It seems wrong to define the array of answers previously to the game. 
   // It sounds more reasonable/rational to calculate the array on every turn. 
   // As an action triggered by the user 
-  res.render('game', {percentage, rounds});
+  res.render('game', {percentage, rounds,timeReward});
 });
 
 app.post('/play', (req, res) => {
   const arr = req.body.arr;
   const percentage = req.body.percentage;
   const rounds = req.body.rounds;
-  res.render('play', {arr, percentage, rounds});
+  const timeReward = req.body.timeReward;
+  res.render('play', {arr, percentage, rounds, timeReward});
 });
 
 app.get('/save', (req, res) => {

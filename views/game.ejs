@@ -23,6 +23,8 @@
         <input type="hidden" name="arr" id="arr" value="">
         <input type="hidden" name="percentage" id="percentage" value="<%= percentage%>">
         <input type="hidden" name="rounds" id="rounds" value="<%= rounds%>">      
+        <input type="hidden" name="timeReward" id="timeReward" value="<%= timeReward%>">      
+       
         <button class="button" type="submit"><i class="fa-solid fa-play" style="font-size:xx-large; color: #000000;"></i></button>
       </form>
     </div>  
@@ -54,6 +56,8 @@
       const nBol = 1000 // '<%=rounds%>';  // What is nBol??  it is defintely not turns. nBol must be big enough to allow most accuracy 
       const percEsq = '<%=percentage%>'/100;
       const rodadas = '<%=rounds%>';
+      const timeRew = '<%=timeReward%>';
+      console.log('TimeReward', timeRew, 's');
       const esq = new Array(rodadas).fill(0);
 
       console.log('percEsq: ', percEsq);
@@ -64,7 +68,7 @@
       const n2 = nBol - n100;
       console.log('n2: ', n2);
 
-      const idx = [2, 100];
+      const idx = [0, 1];
       const pool = new Array(n2).fill(idx[0]).concat(new Array(n100).fill(idx[1]));
 
       console.log(pool.length);
@@ -76,14 +80,15 @@
           esq[i] = pool[index];
       }
 
-      const p2 = esq.filter(value => value === 2).length / rodadas;
-      const p100 = esq.filter(value => value === 100).length / rodadas;
+      const p2 = esq.filter(value => value === 0).length / rodadas;
+      const p100 = esq.filter(value => value === 1).length / rodadas;
 
       console.log(p2, p100);
       console.log('esq', esq);
       $('#p2').val(p2);
       $('#p100').val(p100);
       $('#arr').val(esq);
+
 
     });
   </script>

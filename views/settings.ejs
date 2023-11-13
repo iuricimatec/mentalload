@@ -13,12 +13,16 @@
     <form action="/game" method="post">
       <p>Insira o percentual de vezes que a nota de R$ 100 deverá aparecer do lado esquerdo.</p>
       <input type="number" name="percentage" id="percentage" required><br>
-      <label for="number">Apenas números:</label><br><br>
+      <label for="percentage">Apenas números:</label><br><br>
       
       <p>Insira o números de rodadas.</p>
       <input type="number" name="rounds" id="rounds" required><br>
-      <label for="turns">Apenas números:</label><br><br>
+      <label for="rounds">Apenas números:</label><br><br>
       
+      <p>Insira o tempo de referência para pontuar a resposta em dobro.</p>
+      <input type="number" name="timeReward" id="timeReward" required><br>
+      <label for="time_ref">Em segundos e apenas números:</label><br><br>
+
       <button class="button" type="submit"><i class="fa-solid fa-play" style="font-size:xx-large; color: #000000;"></i></button><br>
       <label for="number">Clique no botão para iniciar o jogo.</label> 
     </form>

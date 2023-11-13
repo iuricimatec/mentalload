@@ -45,6 +45,7 @@ function runTimer(timerElement,clearAnimation) {
   console.log(timerElement,clearAnimation, timeLeft, timer);
   const timerCircle = timerElement.querySelector('svg > circle + circle');
   timerElement.classList.add('animatable');
+     
   // by removing strokeDashoffset the animation does not take time 
   // to load up  the timer. It stops, reload and restart depending on
   // the button event click   
@@ -99,13 +100,13 @@ nBol tem que ser  o numero de rodadas
 
 ***********************/
 
-function playGame(arr) {
+function playGame(arr, timeReward) {
   
 
   const turns = arr.length; // number of rounds to play
   console.log(turns);
   console.log(arr);
-
+  console.log('timeReward', timeReward);
   var turn = 1;
   var lefts = 0;
   var wins = 0;
@@ -180,11 +181,27 @@ function playGame(arr) {
 
         lefts+=1;
 
-        if (arr[turn-1] == 2) {
-          results.push([choice, 2])
-        } else if (arr[turn-1] == 100) {
+        if (arr[turn-1] == 0) { // if it's a loss
+          console.log('TIME REWARD?: ',timeLeft, timeReward)
+          if (timeLeft > timeReward) { 
+            results.push([choice, 10]);
+            $('#no-prize-image').attr('src', '/images/10reais.png');
+          } else {
+            results.push([choice, 5]);
+            $('#no-prize-image').attr('src', '/images/5reais.png');
+
+          }
+        } else if (arr[turn-1] == 1) { // if it's a win
           wins+=1;
-          results.push([choice, 100]);              
+          console.log('TIME REWARD?: ',timeLeft, timeReward)
+          if (timeLeft > timeReward) { 
+            results.push([choice, 100]);              
+            $('#prize-image').attr('src', '/images/100reais.png');
+          } else {
+            results.push([choice, 50]);
+            $('#prize-image').attr('src', '/images/50reais.png');
+
+          }
         }
       } 
       if (choice=='right') {
@@ -193,34 +210,57 @@ function playGame(arr) {
         $('#right').css('color', '#FFF');
         $('#left').css('background-color', '#000');
         $('#left').css('border', '#000');
-
-        if (arr[turn-1] == 2) {
+ 
+  
+        // if it's a win. the logic is in the negative because we are looking at the value stored in the left array distriution, which the positon has value 2, but the user won but clicking a right click being a won, but and we push left clicks only
+        if (arr[turn-1] == 0) { // it is a win
           wins+=1;
-          results.push([choice, 100]);
-        } else if (arr[turn-1] == 100) {
-          results.push([choice, 2])
+          console.log('TIME REWARD?: ',timeLeft, timeReward)
+          if (timeLeft > timeReward) { 
+            results.push([choice, 100]);
+            $('#prize-image').attr('src', '/images/100reais.png');
+              
+          } else {
+            results.push([choice, 50]);
+            $('#prize-image').attr('src', '/images/50reais.png');
+
+          }
+          
+        } else if (arr[turn-1] == 1) { // it is a loss
+          console.log('TIME REWARD?: ',timeLeft, timeReward)
+          if (timeLeft > timeReward) { 
+            results.push([choice, 5])
+            $('#no-prize-image').attr('src', '/images/10reais.png');
+          } else {
+            results.push([choice, 10])
+            $('#no-prize-image').attr('src', '/images/5reais.png');
+          }
+
+        
+
+
         }
       }
       $('#img-display').hide();
       $('#prize-image').hide();
       $('#no-prize-image').hide();                     
-
+      
       // init first timer 600 miliseconds
       setTimeout(function() {
         // showing result image 
         $('#buttons').hide();
         // console.log('choice ', choice, ' arr[turn-1]: ', arr[turn-1]);
         if (choice=='left') {         
-          if (arr[turn-1] == 2) {
-            $('#no-prize-image').show();
-          } else if (arr[turn-1] == 100) {
-            $('#prize-image').show();
+          if (arr[turn-1] == 0) { // if turn is a loss
+            $('#no-prize-image').show();            
+          } else if (arr[turn-1] == 1) { // else if turn is a win
+            $('#prize-image').show();              
           }
         }
         if (choice=='right') {
-          if (arr[turn-1] == 2) {
+          if (arr[turn-1] == 0) { // this conditional has its logic in backwrds. if the user's choice is right and arr[i] is 0 it means  a win 
             $('#prize-image').show();
-          } else if (arr[turn-1] == 100) {
+          } else if (arr[turn-1] == 1) { // this conditional has its logic in backwards. it  the user's choice is right and arr[i] is 1 it means a loss. because the ystem looks nly at left results, and it reverts  right results with its own. 
             $('#no-prize-image').show();
           }
         }
