@@ -49,8 +49,10 @@
     </div>
      
     <div id="img-display" class="image-container" style="display:none;">
-      <img id="prize-image" width="447" src="/images/50reais.png" alt="Prize Image" style="display:none;">
-      <img id="no-prize-image" width="447" src="/images/5reais.png" alt="No Prize Image" style="display:none;">
+      <img id="prize5-image" width="447" src="/images/5reais.png" alt="Prize 5 Image" style="display:none;">
+      <img id="prize10-image" width="447" src="/images/10reais.png" alt="Prize 10 Image" style="display:none;">
+      <img id="prize50-image" width="447" src="/images/50reais.png" alt="Prize 50 Image" style="display:none;">
+      <img id="prize100-image" width="447" src="/images/100reais.png" alt="Prize 100 Image" style="display:none;">
     </div>
 
     <div id="chosen-block" style="text-align:center; display:none">
@@ -112,6 +114,99 @@
     }
 
 
+
+
+    // Function to convert data to CSV format
+    function convertToCSV(data) {
+      const header = Object.keys(data[0]).join(",") + "\n";
+      const rows = data.map(obj => Object.values(obj).join(",")).join("\n");
+      return header + rows;
+    }
+
+    // Function to trigger the download
+    function downloadCSV(data, filename) {
+      const csvData = convertToCSV(data);
+      const blob = new Blob([csvData], { type: "text/csv" });
+
+      // Create a download link
+      const link = document.createElement("a");
+      link.href = URL.createObjectURL(blob);
+      link.download = filename;
+
+      // Simulate a click on the link to trigger the download
+      link.click();
+
+      // Clean up
+      URL.revokeObjectURL(link.href);
+    }
+
+
+
+
+    function endGame() {
+
+      document.getElementById('round').textContent = '10 (Game Over)';
+      secondsLeft = 0
+      $('#buttons').hide();
+      $('#play-console').hide();
+      $('#loader-block').hide();
+
+
+      // 
+      $('#img-display').hide();
+      $('#prize-image').hide();
+      $('#no-prize-image').hide();
+      $('#buttons').hide();
+      $('#loader-block').hide();
+      $('#result-message').text('Fim de Jogo!');
+      results.forEach(function(item,index) {
+        console.log('item',item);
+        // $('#items-list').append('<li>Rodada ' + parseInt(parseInt(index)+1) + ': ' + item + '</li>');
+      });
+
+      // a) Mostrar só o quanto a pessoa ganhou sobre o máximo que ela poderia ter ganhado (número de rodadas x 100).
+      $('#max').text('Pontos: ' + (wins*100) + '/' + (currentRound*100));
+      
+      // b) Mostrar o aproveitamento percentual quantas vezes ela acertou a nota de 100
+      $('#wins').text('Acertos: ' + ((wins/(currentRound))*100) + '%');
+      console.log('wins: ', wins);
+
+      // c) Mostrar quantas vezes ela escolheu o lado esquerdo em percentual
+      $('#lefts').text('Total Esquerdas: ' + ((lefts/currentRound)*100) + '%');
+      console.log('%lefts: ',lefts);
+
+      // d) Juntar os tempos de reação de cada rodada para dar o resultado no final
+      tot = 0
+      deltas.forEach(function(d) {
+        tot+=d; 
+      });
+      $('#interval').text('Duração: ' + tot + ' milisegundos');
+
+      // e) Mostrar uma curva de média deslizante com N = 10 rodadas e step de 1 rodada 
+      // em um gráfico em que o X é a rodada e o Y é a percentagem que a pessoa escolheu o lado esquerdo                
+
+
+      // Sample data (replace this with your actual data)
+      var sampleData = []
+      results.forEach(function(item,index) {
+        sampleData.push({ rodada: index, lado: item[0], valor: item[1], duracao: deltas[index]});
+      });
+      console.log('sampleData', sampleData);  
+      // Event listener for the button click
+      const saveButton = document.getElementById("saveButton");
+      saveButton.addEventListener("click", function() {
+        downloadCSV(sampleData, "results.csv");
+      });
+      // show result blocks <divs>
+      $('#saveButton').show();
+      $('#result-button').show();
+      $('#result-block').show();
+      $('#reset-block').show();
+
+
+
+    }
+
   </script>
 
 
@@ -124,11 +219,13 @@
       let secondsLeft = 6;
       let timein = new Date();
       const arr = '<%=arr%>'.split(',');
+      const timeReward = '<%=timeReward%>';
       console.log('ARR ', arr, arr[1]);
 
 
       // Using objects to store pairs
       var results = [];
+      var deltas = [];
       var wins = 0;
       var lefts = 0;
 
@@ -198,35 +295,45 @@
               console.log('pos ', arr[currentRound-1], currentRound);
           
               if (arr[currentRound-1] == 0) {
-                results.push([choice, 5])
-                $('#no-prize-image').show();
+                if (secondsLeft >= timeReward) {
+                  results.push([choice, 10]);             
+                  console.log('push doubled');
+                  $('#prize10-image').show();
+             
+                } else {
+                  results.push([choice, 5]);              
+                  $('#prize5-image').show();
+                } 
                 $('#img-display').show();   
                 $('#prize-image').hide();          
 
               } else if (arr[currentRound-1] == 1) {
                 wins+=1;
-                results.push([choice, 50]);              
-                $('#prize-image').show();
+                if (secondsLeft >= timeReward) {
+                  results.push([choice, 100]);
+                  $('#prize100-image').show();
+                  console.log('push doubled');             
+                } else {
+                  results.push([choice, 50]);              
+                  $('#prize50-image').show();
+                } 
+                
                 $('#img-display').show();
-                $('#no-prize-image').hide();
               }         
               
               setTimeout(function() {
                 $('#img-display').hide(); 
-                $('#no-prize-image').hide();
-                $('#prize-image').hide();
+                $('#prize5-image').hide();
+                $('#prize10-image').hide();
+                $('#prize50-image').hide();
+                $('#prize100-image').hide();
                              
                 $('#buttons').show();
                 $('#play-console').show();
                 $('#loader-block').show();
 
                 if (currentRound >= 10) {
-                  document.getElementById('round').textContent = '10 (Game Over)';
-                  secondsLeft = 0
-                  $('#buttons').hide();
-                  $('#play-console').hide();
-                  $('#loader-block').hide();
-                  $('#reset-block').show();
+                  endGame();
                 }
 
                 resetCountdown(6);            
