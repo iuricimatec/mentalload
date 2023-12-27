@@ -8,20 +8,19 @@
   <link rel="stylesheet" href="/css/styles.css">
   <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
   
-  
 </head>
 <body>
   <div>
-    <h1>Bemvindo ao Carga Mental!</h1>
+    <h1>Bemvindo ao jogo Alta Carga Mental! Vamos dar início.</h1>
+    <p>Para jogar é bem simples:</p>
+    <ul style="list-style:none; text-align: justify;">
+      <li>1. Escolha uma caixinha branca, ou da esquerda ou da direita, e tente encontrar a nota de 100 reais.</li>
+      <li>2. No início de cada rodada posicione o mouse no círculo vermelho.</li>
+      <li>3. Cuidado! Se demorar muito para escolher, voltará para o início do jogo.</li>
+      <li>4. Respostas rapidas serão premiadas.</li>
+    </ul>
     <div id="instructions">
-      <p>Vamos dar início ao jogo.</p>
-      <p>Para jogar é bem simples:</p>
-      <ul style="list-style:none; text-align: justify;">
-        <li>1. Escolha uma caixinha branca, ou da esquerda ou da direita, e tente encontrar a nota de 100 reais.</li>
-        <li>2. No início de cada rodada posicione o mouse no círculo vermelho.</li>
-        <li>3. Cuidado! Se demorar muito para escolher, voltará para o início do jogo.</li>
-      </ul>
-      <form action="play" method="post">
+      <form action="play2" method="post">
         <input type="hidden" name="arr" id="arr" value="">
         <input type="hidden" name="percentage" id="percentage" value="<%= percentage%>">
         <input type="hidden" name="rounds1" id="rounds1" value="<%= rounds1%>">    
@@ -30,11 +29,11 @@
         <button class="button" type="submit"><i class="fa-solid fa-play" style="font-size:xx-large; color: #000000;"></i></button>
       </form>
     </div>  
-  </div>   
+  </div>
   <script src="/js/utils.js"></script>
   <script>
     $(document).ready(function() {
-      game(percentage.value, rounds1.value, limit.value);
+      game(percentage.value, rounds2.value, limit.value);
     });
   </script>
 </body>
