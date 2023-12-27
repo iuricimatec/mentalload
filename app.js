@@ -26,6 +26,7 @@ app.get('/settings', (req, res) => {
 
 
 
+<<<<<<< HEAD
 app.all('/game', (req, res) => {
   if (req.method === 'POST') {
     const percentage = req.body.percentage;
@@ -45,6 +46,16 @@ app.all('/game', (req, res) => {
     res.render('game2', {percentage, rounds1, rounds2, limit});
   }
 
+=======
+app.post('/game', (req, res) => {
+  const percentage = req.body.percentage;
+  const rounds = req.body.rounds;
+  const timeReward = req.body.timeReward
+  // It seems wrong to define the array of answers previously to the game. 
+  // It sounds more reasonable/rational to calculate the array on every turn. 
+  // As an action triggered by the user 
+  res.render('game', {percentage, rounds,timeReward});
+>>>>>>> d36c8015ffb7e4f4573472cf81a02519f5d41dfc
 });
 
 
@@ -52,10 +63,16 @@ app.all('/game', (req, res) => {
 app.post('/play', (req, res) => {
   const arr = req.body.arr;
   const percentage = req.body.percentage;
+<<<<<<< HEAD
   const rounds1 = req.body.rounds1;
   const rounds2 = req.body.rounds2;
   const limit = req.body.limit;
   res.render('play', {arr, percentage, rounds1, rounds2, limit});
+=======
+  const rounds = req.body.rounds;
+  const timeReward = req.body.timeReward;
+  res.render('play', {arr, percentage, rounds, timeReward});
+>>>>>>> d36c8015ffb7e4f4573472cf81a02519f5d41dfc
 });
 
 

@@ -7,15 +7,18 @@
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta2/css/all.min.css" integrity="sha512-YWzhKL2whUzgiheMoBFwW8CKV4qpHQAEuvilg9FAn5VJUDwKZZxkJNuGM4XkWuk94WCrrwslk8yWNGmY1EduTA==" crossorigin="anonymous" referrerpolicy="no-referrer" />
   <link rel="stylesheet" href="/css/styles.css">  
   <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
-  
 </head>
 <body>
   <div id="container" class="container">
-    <h1>Jogo</h1>        
+    <h1>Jogo</h1>
+
     <div id="result-block" style="display:none;">
       <p id="result-message"></p>
       <button class="button" id="result-button" style="display:none;"><i class="fa-solid fa-magnifying-glass" style="font-size:xx-large; color: #000000;"></i></button>
       <button class="button" id="saveButton" style="display:none;"><i class="fas fa-save" style="font-size:xx-large; color: #000000;"></i></button>
+
+
+
       <div id="result-list" style="display:none;">
         <ul id="items-list" style="list-style:none;margin-left:-3%;"></ul>
         <p id="max"></p>
@@ -23,6 +26,7 @@
         <p id="lefts"></p>
         <p id="interval"></p>
       </div>      
+
     </div>
 
     <div id="reset-block" style="display:none;">
@@ -37,11 +41,14 @@
       <p>Clique para reiniciar</p>      
     </div>
 
-    <div id="buttons" class="buttons">
+    <div id="play-console">
+      <p>Rodada: <span id="round">1</span> / 10</p>
+      <div id="buttons" class="buttons">
         <button class="button" id="left" class="button primary"></button>
         <button class="button" id="right" class="button primary"></button>
+      </div>
     </div>
-
+     
     <div id="img-display" class="image-container" style="display:none;">
       <img id="prize5-image" width="447" src="/images/5reais.png" alt="Prize 5 Image" style="display:none;">
       <img id="prize10-image" width="447" src="/images/10reais.png" alt="Prize 10 Image" style="display:none;">
@@ -49,7 +56,9 @@
       <img id="prize100-image" width="447" src="/images/100reais.png" alt="Prize 100 Image" style="display:none;">
     </div>
 
-    <div id="loader-block" class="loader-block">
+    <div id="loader-block" class="loader-block" style="display:block;">
+      <p>Tempo Restante: <span id="timer">6</span> segundos</p>         
+    
      <div id="timer" style="color:white; display:none;">00:00:00</div>
      <text x="100" y="100" text-anchor="middle" style="display:block;"><tspan id="timeLeft"></tspan></text>
 
@@ -61,14 +70,6 @@
       </div>
     </div>      
 
-    <div id="chosen-block" style="text-align:center; display:none">
-      <h1 id="choice"></h1>
-    </div>
-
-  </div>
-
-  <script src="/js/tracking.js"></script>
-  <script src="/js/utils.js"></script>
   <script>
     // array containing left solutions
     const arr = '<%= arr %>'.split(',');
@@ -124,5 +125,5 @@
     }); // document block executes on loading page. //
 
   </script>
-  </body>
+</body>
 </html>

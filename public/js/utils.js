@@ -237,6 +237,7 @@ function runTimer(timerElement,clearAnimation) {
   console.log(timerElement,clearAnimation, timeLeft, timer);
   const timerCircle = timerElement.querySelector('svg > circle + circle');
   timerElement.classList.add('animatable');
+     
   // by removing strokeDashoffset the animation does not take time 
   // to load up  the timer. It stops, reload and restart depending on
   // the button event click   
