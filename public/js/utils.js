@@ -1,3 +1,195 @@
+let timeLeft = 6;
+let timer = document.getElementById('timeLeft');
+
+
+
+
+function game(percentage, rounds, limit) {
+  console.log(percentage, rounds, limit);
+  
+  const nBol = 1000 // '<%=rounds%>';  // What is nBol??  it is defintely not turns. nBol must be big enough to allow most accuracy 
+  const percEsq = percentage/100;
+  const rodadas = rounds;
+  const esq = new Array(rodadas).fill(0);
+
+  // console.log('percEsq: ', percEsq);
+
+  const n50 = Math.round((nBol * percEsq));
+  // console.log('n100: ', n100);
+
+  const n5 = nBol - n50;
+  // console.log('n2: ', n2);
+
+  const idx = [5, 50];
+  const pool = new Array(n5).fill(idx[0]).concat(new Array(n50).fill(idx[1]));
+
+  // console.log(pool.length);
+  // console.log('pool', pool);
+  
+  for (let i = 0; i < rodadas; i++) {
+    const index = Math.floor(Math.random() * 1000);
+    esq[i] = pool[index];
+  }
+
+  const p5 = esq.filter(value => value === 5).length / rodadas;
+  const p50 = esq.filter(value => value === 50).length / rodadas;
+
+  console.log('p5', p5, 'p50', p50);
+  console.log('esq', esq);
+  $('#p5').val(p5);
+  $('#p50').val(p50);
+  $('#arr').val(esq);
+
+} 
+ 
+
+function resetGame() {
+  $('#result-button').hide();
+  //$('#saveButton').hide();
+  $('#result-list').show();
+}
+
+function saveGame() {
+  $('#img-display').hide();
+  $('#prize5-image').hide();
+  $('#prize10-image').hide();
+  $('#prize50-image').hide();
+  $('#prize100-image').hide();  
+  // console.log('saving csv');
+}
+ 
+function resetCountdown(timeout) {
+  stopTimer(timeout)
+  timeLeft = 6;
+  runTimer(document.querySelector('.timer'),true);
+  
+}
+
+function displayButtons() {
+  $('#left').css('background-color', '#FFF');
+  $('#left').css('border-color', '#FFF');
+  $('#left').css('color' , '#000');
+
+  $('#right').css('background-color', '#FFF');
+  $('#right').css('border-color', '#FFF');
+  $('#right').css('color' , '#000');
+  
+  $('#buttons').show();
+  $('#loader-block').show(); 
+}
+
+function displayResult(arr, turn, wins) {
+  // hide buttons
+  $('#buttons').hide();
+  // hide timer
+  $('#loader-block').hide();
+
+  if (arr[turn-1] == 5) {
+    $('#prize5-image').show();
+  } else if (arr[turn-1] == 50) {
+    $('#prize50-image').show();
+    wins+=1;
+  }
+  $('#img-display').show();
+
+  setTimeout(function() {
+    $('#img-display').hide();
+    $('#prize5-image').hide();
+    $('#prize10-image').hide();
+    $('#prize50-image').hide();
+    $('#prize100-image').hide();
+    displayButtons();
+
+  }, 500);
+}
+
+function play(arr, turn) {
+  const turns = arr.length; // number of rounds to play
+  console.log('turns', turns);
+  console.log('array', arr);
+
+  runTimer(document.querySelector('.timer'),true);
+  // init first timer 5 seconds
+  timeout = setTimeout(function() {
+    stopTimer(timeout);
+    $('#loader-block').hide();
+    $('#buttons').hide();
+    $('#reset-block').show();    
+  }, 6000);
+
+  $('button').click(function() {
+    if (this.id == 'left' || this.id == 'right') {
+      $('#loader-block').hide();  
+      setTimeout(function() {
+        console.log('choice ', 'left', ' arr[turn-1]: ', arr[turn-1]);
+        displayResult(arr, turn, wins); 
+        resetCountdown(timeout); 
+      }, 600);
+    }
+  });  
+}
+
+function endGame(results, turns, wins, deltas) {
+  //
+  // Finish 1st stage and start 2nd stage to increase mental load
+  //
+  $('#img-display').hide();
+  $('#prize-image').hide();
+  $('#no-prize-image').hide();
+  $('#buttons').hide();
+  $('#loader-block').hide();
+  $('#result-message').text('Fim de Jogo!');
+  results.forEach(function(item,index) {
+    console.log('item',item);
+    // $('#items-list').append('<li>Rodada ' + parseInt(parseInt(index)+1) + ': ' + item + '</li>');
+  });
+
+  // a) Mostrar só o quanto a pessoa ganhou sobre o máximo que ela poderia ter ganhado (número de rodadas x 100).
+  $('#max').text('Pontos: ' + (wins*100) + '/' + (turns*100));
+
+  // b) Mostrar o aproveitamento percentual quantas vezes ela acertou a nota de 100
+  $('#wins').text('Acertos: ' + ((wins/(turns))*100) + '%');
+  console.log('wins: ', wins);
+
+  // c) Mostrar quantas vezes ela escolheu o lado esquerdo em percentual
+  $('#lefts').text('Total Esquerdas: ' + ((lefts/turns)*100) + '%');
+  console.log('%lefts: ',lefts);
+
+  // d) Juntar os tempos de reação de cada rodada para dar o resultado no final
+  tot = 0
+  deltas.forEach(function(d) {
+    tot+=d; 
+  });
+  $('#interval').text('Duração: ' + tot + ' milisegundos');
+
+  // e) Mostrar uma curva de média deslizante com N = 10 rodadas e step de 1 rodada 
+  // em um gráfico em que o X é a rodada e o Y é a percentagem que a pessoa escolheu o lado esquerdo                
+
+
+  // Sample data (replace this with your actual data)
+  var sampleData = []
+  results.forEach(function(item,index) {
+    sampleData.push({ rodada: index, lado: item[0], valor: item[1], duracao: deltas[index]});
+  });
+  console.log('sampleData', sampleData);  
+  // Event listener for the button click
+  const saveButton = document.getElementById("saveButton");
+  saveButton.addEventListener("click", function() {
+    downloadCSV(sampleData, "results.csv");
+  });
+  // show result blocks <divs>
+  $('#saveButton').show();
+  $('#result-button').show();
+  $('#result-block').show();
+  $('#reset-block').show();
+
+
+}
+
+
+
+
+
  // Function to convert data to CSV format
  function convertToCSV(data) {
   const header = Object.keys(data[0]).join(",") + "\n";
@@ -31,13 +223,13 @@ function downloadCSV(data, filename) {
 //
 // source code of timer animation;
 //
-   
-let timeLeft = 6;
-let timer = document.getElementById('timeLeft');
-
 
 function isTimeLeft() {
   return timeLeft > -1;
+}
+
+function stopTimer(t) {
+  clearInterval(t);
 }
 
 function runTimer(timerElement,clearAnimation) {
@@ -74,253 +266,7 @@ function runTimer(timerElement,clearAnimation) {
       timerElement.classList.remove('animatable');
     }  
   }, 1000);
+  return countdownTimer;
 }
 
 
-
-
-
-
-/**************************** 
-  references https://developer.mozilla.org/en-US/docs/Web/CSS/animation 
-
-@Daniel Gomes de Almeida Filho
-tem ambiguidade na frase:
-Insira o percentual de vezes que a nota de R$ 100 deverá aparecer do lado esquerdo.
-
-Se 20% for atribuido ao percentual, então a nota de 100 reais deverá aparecer 20% das rodadas do lado esquerdo?
-
-
-
-Como eu calculo o percentual de vezes?
-Pelo codigo fonte no matlab o percentual refere-se ao pool, ao inves do numero de rodadas. Porque?
-
-nBol tem que ser  o numero de rodadas
-
-***********************/
-
-function playGame(arr) {
-  
-
-  const turns = arr.length; // number of rounds to play
-  console.log(turns);
-  console.log(arr);
-
-  var turn = 1;
-  var lefts = 0;
-  var wins = 0;
-  var deltas = [];
-
-  // Using objects to store pairs
-  var results = [];
-
-  // Start timer;
-  startTracking();
-  startTimer();
-
-  var timeout = setTimeout(function() {
-    stopTimer();
-    $('#loader-block').hide();
-    $('#buttons').hide();
-
-    // $('#return').show();
-    $('#message').text('Tempo Encerrado!!');
-    $('#reset-block').show();
-  },5000);
-
-  // console.log('timer1', timeout);
-
-
-  $('button').click(function() {
-    console.log('turns: ', turn);
-    
-    clearTimeout(timeout);
-    startTimer();            
-
-    // collect data from time tracking 
-    stopTracking();
-    console.log('elapsed time', elapsedTime);        
-    deltas.push(elapsedTime);
-    //
-    // Reset Game
-    //
-    if (this.id == 'game') {
-      window.location.href = 'game';
-      return;
-    }
-    // Display results
-    if (this.id == 'result-button') {
-      $('#img-display').hide();
-      $('#result-button').hide();
-      //$('#saveButton').hide();
-      $('#result-list').show();
-      return;
-    }
-
-    // Save results to csv
-    if (this.id == 'saveButton') {
-      $('#img-display').hide();
-      // console.log('saving csv');
-    }
-    //
-    // Playing Game
-    //
-    if (this.id == 'left' || this.id == 'right') {     
-      clearAnimation = true;               
-      const choice = $(this).attr('id');          
-      if (choice=='left') {
-        
-        $('#left').css('background-color', 'blue')
-        $('#left').css('border-color', 'blue');
-        $('#left').css('color', '#FFF');
-
-        //$('#right').hide();
-        $('#right').css('background-color', '#000');
-        $('#right').css('border', '#000');
-
-        lefts+=1;
-
-        if (arr[turn-1] == 2) {
-          results.push([choice, 2])
-        } else if (arr[turn-1] == 100) {
-          wins+=1;
-          results.push([choice, 100]);              
-        }
-      } 
-      if (choice=='right') {
-        $('#right').css('background-color', 'blue')
-        $('#right').css('border-color', 'blue');
-        $('#right').css('color', '#FFF');
-        $('#left').css('background-color', '#000');
-        $('#left').css('border', '#000');
-
-        if (arr[turn-1] == 2) {
-          wins+=1;
-          results.push([choice, 100]);
-        } else if (arr[turn-1] == 100) {
-          results.push([choice, 2])
-        }
-      }
-      $('#img-display').hide();
-      $('#prize-image').hide();
-      $('#no-prize-image').hide();                     
-
-      // init first timer 600 miliseconds
-      setTimeout(function() {
-        // showing result image 
-        $('#buttons').hide();
-        // console.log('choice ', choice, ' arr[turn-1]: ', arr[turn-1]);
-        if (choice=='left') {         
-          if (arr[turn-1] == 2) {
-            $('#no-prize-image').show();
-          } else if (arr[turn-1] == 100) {
-            $('#prize-image').show();
-          }
-        }
-        if (choice=='right') {
-          if (arr[turn-1] == 2) {
-            $('#prize-image').show();
-          } else if (arr[turn-1] == 100) {
-            $('#no-prize-image').show();
-          }
-        }
-        $('#img-display').show();
-        $('#result-block').show();          
-
-        //
-        // End Game
-        //
-        if (turn-1 == turns) {
-          // 
-          $('#img-display').hide();
-          $('#prize-image').hide();
-          $('#no-prize-image').hide();
-          $('#buttons').hide();
-          $('#loader-block').hide();
-          $('#result-message').text('Fim de Jogo!');
-          results.forEach(function(item,index) {
-            console.log('item',item);
-            // $('#items-list').append('<li>Rodada ' + parseInt(parseInt(index)+1) + ': ' + item + '</li>');
-          });
-
-          // a) Mostrar só o quanto a pessoa ganhou sobre o máximo que ela poderia ter ganhado (número de rodadas x 100).
-          $('#max').text('Pontos: ' + (wins*100) + '/' + (turns*100));
-          
-          // b) Mostrar o aproveitamento percentual quantas vezes ela acertou a nota de 100
-          $('#wins').text('Acertos: ' + ((wins/(turns))*100) + '%');
-          console.log('wins: ', wins);
-
-          // c) Mostrar quantas vezes ela escolheu o lado esquerdo em percentual
-          $('#lefts').text('Total Esquerdas: ' + ((lefts/turns)*100) + '%');
-          console.log('%lefts: ',lefts);
-
-          // d) Juntar os tempos de reação de cada rodada para dar o resultado no final
-          tot = 0
-          deltas.forEach(function(d) {
-            tot+=d; 
-          });
-          $('#interval').text('Duração: ' + tot + ' milisegundos');
-
-          // e) Mostrar uma curva de média deslizante com N = 10 rodadas e step de 1 rodada 
-          // em um gráfico em que o X é a rodada e o Y é a percentagem que a pessoa escolheu o lado esquerdo                
-
-
-          // Sample data (replace this with your actual data)
-          var sampleData = []
-          results.forEach(function(item,index) {
-            sampleData.push({ rodada: index, lado: item[0], valor: item[1], duracao: deltas[index]});
-          });
-          console.log('sampleData', sampleData);  
-          // Event listener for the button click
-          const saveButton = document.getElementById("saveButton");
-          saveButton.addEventListener("click", function() {
-            downloadCSV(sampleData, "results.csv");
-          });
-          // show result blocks <divs>
-          $('#saveButton').show();
-          $('#result-button').show();
-          $('#result-block').show();
-          $('#reset-block').show();
-          return;
-        }
-
-      
-        // init second timer 500 miliseconds
-        setTimeout(function() {
-          $('#result-block').hide();
-          $('#img-display').hide();
-          
-          $('#left').css('background-color', '#FFF');
-          $('#left').css('border-color', '#FFF');
-          $('#left').css('color' , '#000');
-
-          $('#right').css('background-color', '#FFF');
-          $('#right').css('border-color', '#FFF');
-          $('#right').css('color' , '#000');
-          //$('#right').show();    
-          // $('#left').show();
-          $('#buttons').show();
-
-          $('#loader-block').show();
-          console.log('timer2: ',document.querySelector('.timer'));
-          runTimer(document.querySelector('.timer'),true);
-          clearTimeout(timeout);                
-          resetTimer();
-          startTimer();
-          startTracking();
-
-          // init first timer 5 seconds
-          timeout = setTimeout(function() {
-              stopTimer();
-              $('#loader-block').hide();
-              $('#buttons').hide();
-              $('#reset-block').show();    
-          },5000);
-        }, 500);
-      }, 600);
-
-      turn+=1;          
-      return;
-    }        
-  });  // on button click  
-}

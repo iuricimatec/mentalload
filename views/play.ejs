@@ -7,8 +7,7 @@
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta2/css/all.min.css" integrity="sha512-YWzhKL2whUzgiheMoBFwW8CKV4qpHQAEuvilg9FAn5VJUDwKZZxkJNuGM4XkWuk94WCrrwslk8yWNGmY1EduTA==" crossorigin="anonymous" referrerpolicy="no-referrer" />
   <link rel="stylesheet" href="/css/styles.css">  
   <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
-  <script src="/js/timer.js"></script>
-
+  
 </head>
 <body>
   <div id="container" class="container">
@@ -29,8 +28,10 @@
     <div id="reset-block" style="display:none;">
       <h3 id="message"></h3>      
       <form action="game" method="post">
-        <input type="hidden" name="percentage" id="percentage" value="<%= percentage %>">        
-        <input type="hidden" name="rounds" id="rounds" value="<%= rounds %>">      
+        <input type="hidden" name="percentage" id="percentage" value="<%=percentage%>">        
+        <input type="hidden" name="rounds1" id="rounds1" value="<%=rounds1%>">
+        <input type="hidden" name="rounds2" id="rounds2" value="<%=rounds2%>">                   
+        <input type="hidden" name="limit" id="limit" value="<%=limit%>">
         <button class="button" id="game"><i class="fa-solid fa-play" style="font-size:xx-large; color: #000000;"></i></button>
       </form>
       <p>Clique para reiniciar</p>      
@@ -42,13 +43,15 @@
     </div>
 
     <div id="img-display" class="image-container" style="display:none;">
-      <img id="prize-image" width="447" src="/images/prize.jpeg" alt="Prize Image" style="display:none;">
-      <img id="no-prize-image" width="447" src="/images/no-prize.jpeg" alt="No Prize Image" style="display:none;">
+      <img id="prize5-image" width="447" src="/images/5reais.png" alt="Prize 5 Image" style="display:none;">
+      <img id="prize10-image" width="447" src="/images/10reais.png" alt="Prize 10 Image" style="display:none;">
+      <img id="prize50-image" width="447" src="/images/50reais.png" alt="Prize 50 Image" style="display:none;">
+      <img id="prize100-image" width="447" src="/images/100reais.png" alt="Prize 100 Image" style="display:none;">
     </div>
 
     <div id="loader-block" class="loader-block">
      <div id="timer" style="color:white; display:none;">00:00:00</div>
-     <text x="100" y="100" text-anchor="middle" style="display:none;"><tspan id="timeLeft"></tspan></text>
+     <text x="100" y="100" text-anchor="middle" style="display:block;"><tspan id="timeLeft"></tspan></text>
 
       <div class="timer animatable">
       <svg>
@@ -57,8 +60,6 @@
       </svg>
       </div>
     </div>      
-   
-
 
     <div id="chosen-block" style="text-align:center; display:none">
       <h1 id="choice"></h1>
@@ -69,17 +70,59 @@
   <script src="/js/tracking.js"></script>
   <script src="/js/utils.js"></script>
   <script>
+    // array containing left solutions
+    const arr = '<%= arr %>'.split(',');
+    // start with 1, instead of 0.
+    var turn = 1;
+    // Using objects to store pairs
+    var results = [];
+
+
+    // Using vanilla JavaScript
+    $('#left').on('click', function() {
+      $('#left').css('background-color', 'blue')
+      $('#left').css('border-color', 'blue');
+      $('#left').css('color', '#FFF');
+      $('#right').css('background-color', '#000');
+      $('#right').css('border', '#000');
+
+      lefts+=1;
+      results.push(['left', arr[turn-1]]);  
+      console.log('results: ', results);      
+    });
+
+
+
+    $('#right').on('click', function() {
+      $('#right').css('background-color', 'blue')
+      $('#right').css('border-color', 'blue');
+      $('#right').css('color', '#FFF');
+      $('#left').css('background-color', '#000');
+      $('#left').css('border', '#000');
+
+      results.push(['right', arr[turn-1]]);   
+      console.log('results: ', results); 
+    });
+
+
+    $('#reset-button').on('click', function() {
+      resetGame();
+    });
+
+    $('#save-button').on('click', function() {
+     saveGame();
+    });
+
+    $('#game').on('click', function() {
+      window.location.href = 'game';
+    });
+
+
+
     $(document).ready(function() {
-      const arr = '<%= arr %>'.split(',');
-
-     
-      console.log('timer2: ',document.querySelector('.timer'));
-      runTimer(document.querySelector('.timer'),false);
-      setTimeout(function() {
-        playGame(arr);
-      },500);
-
+      play(arr, turn); 
     }); // document block executes on loading page. //
+
   </script>
   </body>
 </html>
