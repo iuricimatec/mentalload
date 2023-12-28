@@ -24,6 +24,10 @@ app.get('/settings', (req, res) => {
   
 });
 
+app.get('/timer', (req, res) => {
+  res.render('timer');
+  
+});
 
 
 app.all('/game', (req, res) => {

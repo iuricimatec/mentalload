@@ -1,7 +1,3 @@
-let timeLeft = 6;
-let timer = document.getElementById('timeLeft');
-
-
 
 
 function game(percentage, rounds, limit) {
@@ -120,10 +116,11 @@ function play(arr, turn) {
   $('button').click(function() {
     if (this.id == 'left' || this.id == 'right') {
       $('#loader-block').hide();  
+      resetCountdown(timeout);
       setTimeout(function() {
         console.log('choice ', 'left', ' arr[turn-1]: ', arr[turn-1]);
         displayResult(arr, turn, wins); 
-        resetCountdown(timeout); 
+         
       }, 600);
     }
   });  
@@ -223,6 +220,9 @@ function downloadCSV(data, filename) {
 //
 // source code of timer animation;
 //
+let timeLeft = 6;
+let timer = document.getElementById('timeLeft');
+
 
 function isTimeLeft() {
   return timeLeft > -1;
@@ -247,9 +247,8 @@ function runTimer(timerElement,clearAnimation) {
     console.log('isTimeLeft: ', isTimeLeft());
     $('button').click(function() {
       clearInterval(countdownTimer);
-      timeLeft = 6;
+      timeLeft = 6
       timerElement.classList.remove('animatable');
-  
     });
   
     if(isTimeLeft()){

@@ -1,30 +1,31 @@
-let timerInterval;
-let timerDurationInSeconds = 0;
+let countdown;
+let targetDate;
 
-function updateTimerDisplay() {
-  const displayElement = document.getElementById('timer');
-  const minutes = Math.floor(timerDurationInSeconds / 60);
-  const seconds = timerDurationInSeconds % 60;
-  displayElement.textContent = `${String(minutes).padStart(2, '0')}:${String(seconds).padStart(2, '0')}`;
+function startCountdown() {
+    // Set the target date to 10 minutes from now
+    targetDate = new Date();
+    targetDate.setSeconds(targetDate.getSeconds() + 5);
+
+    // Update the countdown every second
+    countdown = setInterval(updateCountdown, 1000);
+
+    // Update the countdown immediately to avoid a delay on start
+    updateCountdown();
 }
 
-function startTimer() {
-  clearInterval(timerInterval);
-  timerDurationInSeconds = 0;
-  updateTimerDisplay();
+function updateCountdown() {
+    const currentDate = new Date();
+    const difference = targetDate - currentDate;
 
-  timerInterval = setInterval(function () {
-    timerDurationInSeconds++;
-    updateTimerDisplay();
-  }, 1000);
-}
+    if (difference <= 0) {
+        // If the countdown is over, stop the interval
+        clearInterval(countdown);
+        document.getElementById('countdown').innerHTML = "0";
+    } else {
+        // Calculate hours, minutes, and seconds
+        const seconds = Math.floor((difference % 60000) / 1000);
 
-function stopTimer() {
-  clearInterval(timerInterval);
-}
-
-function resetTimer() {
-  clearInterval(timerInterval);
-  timerDurationInSeconds = 0;
-  updateTimerDisplay();
+        // Display the countdown
+        document.getElementById('countdown').innerHTML = seconds;
+    }
 }

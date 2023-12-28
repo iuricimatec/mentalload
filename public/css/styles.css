@@ -198,3 +198,38 @@ input {
 .timer.animatable > svg > circle + circle {
     transition: stroke-dashoffset 0.3s ease;
 }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+.countdown-container {
+    text-align: center;
+}
+
+#countdown {
+    font-size: 2em;
+    margin-bottom: 20px;
+}
+
+button {
+    padding: 10px 20px;
+    font-size: 1em;
+}
