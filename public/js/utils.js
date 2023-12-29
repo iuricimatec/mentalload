@@ -74,17 +74,15 @@ function displayButtons() {
   $('#loader-block').show(); 
 }
 
-function displayResult(arr, turn, wins) {
+function displayResult(arr, turn) {
   // hide buttons
   $('#buttons').hide();
   // hide timer
   $('#loader-block').hide();
-
-  if (arr[turn-1] == 5) {
+  if (arr[turn] == 5) {
     $('#prize5-image').show();
-  } else if (arr[turn-1] == 50) {
+  } else if (arr[turn] == 50) {
     $('#prize50-image').show();
-    wins+=1;
   }
   $('#img-display').show();
 
@@ -95,17 +93,77 @@ function displayResult(arr, turn, wins) {
     $('#prize50-image').hide();
     $('#prize100-image').hide();
     displayButtons();
-
   }, 500);
+  
 }
 
-function play(arr, turn) {
-  const turns = arr.length; // number of rounds to play
-  console.log('turns', turns);
-  console.log('array', arr);
+function play(arr) {
+  let startTime = Date.now();
+  let elapsedTime = 0;
 
-  runTimer(document.querySelector('.timer'),true);
+  console.log(startTime);
+   // start with 1, instead of 0.
+   var turn = 0;
+   var wins = 0;
+   var lefts = 0;
+   // Using objects to store result in pairs
+   var results = [];
+
+    $('#reset-button').on('click', function() {
+      resetGame();
+    });
+
+    $('#save-button').on('click', function() {
+     saveGame();
+    });
+
+    $('#game').on('click', function() {
+      window.location.href = 'game';
+    });
+
+    $('#result-button').on('click', function() {
+      $('#result-list').show();
+    });
+
+  // auxiliary functions
+  // Using vanilla JavaScript
+  $('#left').on('click', function() {
+    $('#left').css('background-color', 'blue')
+    $('#left').css('border-color', 'blue');
+    $('#left').css('color', '#FFF');
+    $('#right').css('background-color', '#000');
+    $('#right').css('border', '#000');
+
+    lefts+=1;
+    elapsedTime = Date.now() - startTime;
+    wins+=1;
+    results.push(['left', 50, elapsedTime]);   
+    // console.log('results: ', results);     
+  });
+
+ 
+  $('#right').on('click', function() {
+    $('#right').css('background-color', 'blue')
+    $('#right').css('border-color', 'blue');
+    $('#right').css('color', '#FFF');
+    $('#left').css('background-color', '#000');
+    $('#left').css('border', '#000');
+
+    elapsedTime = Date.now() - startTime;
+    if (arr[turn]===50) {
+      results.push(['right', 5, elapsedTime]);   
+    } else {
+      wins+=1;
+      results.push(['right', 50, elapsedTime]);   
+    }
+    console.log('results: ', results); 
+  });
+
+
+
+
   // init first timer 5 seconds
+  runTimer(document.querySelector('.timer'),true);
   timeout = setTimeout(function() {
     stopTimer(timeout);
     $('#loader-block').hide();
@@ -114,35 +172,43 @@ function play(arr, turn) {
   }, 6000);
 
   $('button').click(function() {
-    if (this.id == 'left' || this.id == 'right') {
+    if (this.id == 'left' || this.id == 'right') {    
       $('#loader-block').hide();  
       resetCountdown(timeout);
       setTimeout(function() {
-        console.log('choice ', 'left', ' arr[turn-1]: ', arr[turn-1]);
-        displayResult(arr, turn, wins); 
-         
+        console.log('choice ', 'left', ' arr[turn]: ', arr[turn]);
+        displayResult(arr, turn);   
+        turn+=1; 
+        console.log('turn ', turn, arr.length, wins);
+        if (turn === arr.length) {
+          endGame(results, arr.length, wins, lefts);
+        }
       }, 600);
     }
   });  
 }
 
-function endGame(results, turns, wins, deltas) {
+function endGame(results, turns, wins, lefts) {
   //
   // Finish 1st stage and start 2nd stage to increase mental load
   //
   $('#img-display').hide();
-  $('#prize-image').hide();
-  $('#no-prize-image').hide();
   $('#buttons').hide();
   $('#loader-block').hide();
   $('#result-message').text('Fim de Jogo!');
+  
+  // 0) Juntar os tempos de reação de cada rodada para dar o resultado no final
+  var tot = 0;
+  var score = 0;
   results.forEach(function(item,index) {
     console.log('item',item);
     // $('#items-list').append('<li>Rodada ' + parseInt(parseInt(index)+1) + ': ' + item + '</li>');
+    tot+=item[2]; 
+    score+=item[1];
   });
 
   // a) Mostrar só o quanto a pessoa ganhou sobre o máximo que ela poderia ter ganhado (número de rodadas x 100).
-  $('#max').text('Pontos: ' + (wins*100) + '/' + (turns*100));
+  $('#max').text('Pontos: ' + score);
 
   // b) Mostrar o aproveitamento percentual quantas vezes ela acertou a nota de 100
   $('#wins').text('Acertos: ' + ((wins/(turns))*100) + '%');
@@ -152,11 +218,7 @@ function endGame(results, turns, wins, deltas) {
   $('#lefts').text('Total Esquerdas: ' + ((lefts/turns)*100) + '%');
   console.log('%lefts: ',lefts);
 
-  // d) Juntar os tempos de reação de cada rodada para dar o resultado no final
-  tot = 0
-  deltas.forEach(function(d) {
-    tot+=d; 
-  });
+
   $('#interval').text('Duração: ' + tot + ' milisegundos');
 
   // e) Mostrar uma curva de média deslizante com N = 10 rodadas e step de 1 rodada 
@@ -166,7 +228,7 @@ function endGame(results, turns, wins, deltas) {
   // Sample data (replace this with your actual data)
   var sampleData = []
   results.forEach(function(item,index) {
-    sampleData.push({ rodada: index, lado: item[0], valor: item[1], duracao: deltas[index]});
+    sampleData.push({ rodada: index, lado: item[0], valor: item[1], duracao: item[2]});
   });
   console.log('sampleData', sampleData);  
   // Event listener for the button click
@@ -223,7 +285,6 @@ function downloadCSV(data, filename) {
 let timeLeft = 6;
 let timer = document.getElementById('timeLeft');
 
-
 function isTimeLeft() {
   return timeLeft > -1;
 }
@@ -233,8 +294,8 @@ function stopTimer(t) {
 }
 
 function runTimer(timerElement,clearAnimation) {
-  console.log('Running function runTimer', timerElement);
-  console.log(timerElement,clearAnimation, timeLeft, timer);
+  // console.log('Running function runTimer', timerElement);
+  // console.log(timerElement,clearAnimation, timeLeft, timer);
   const timerCircle = timerElement.querySelector('svg > circle + circle');
   timerElement.classList.add('animatable');
   // by removing strokeDashoffset the animation does not take time 
@@ -244,16 +305,17 @@ function runTimer(timerElement,clearAnimation) {
       
 
   let countdownTimer = setInterval(function(){
-    console.log('isTimeLeft: ', isTimeLeft());
+    //console.log('isTimeLeft: ', isTimeLeft());
     $('button').click(function() {
       clearInterval(countdownTimer);
       timeLeft = 6
       timerElement.classList.remove('animatable');
     });
   
-    if(isTimeLeft()){
+    if(isTimeLeft() || timeLeft === 0){
       const timeRemaining = timeLeft--;
-      console.log('timeRemaining: ', timeRemaining, 'timeLeft: ', timeLeft);
+      // console.log('timeRemaining: ', timeRemaining, 'timeLeft: ', timeLeft);
+      
       // for clockwise animation
       const normalizedTime = (timeRemaining - 6) / 4;
       // for counter clockwise animation
