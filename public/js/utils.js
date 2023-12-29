@@ -1,24 +1,18 @@
 
 
-function game(percentage, rounds, limit) {
-  console.log(percentage, rounds, limit);
-  
+function game(percentage, rounds) {
+  // console.log(percentage, rounds, limit);
   const nBol = 1000 // '<%=rounds%>';  // What is nBol??  it is defintely not turns. nBol must be big enough to allow most accuracy 
   const percEsq = percentage/100;
   const rodadas = rounds;
   const esq = new Array(rodadas).fill(0);
-
   // console.log('percEsq: ', percEsq);
-
-  const n50 = Math.round((nBol * percEsq));
-  // console.log('n100: ', n100);
-
-  const n5 = nBol - n50;
-  // console.log('n2: ', n2);
-
-  const idx = [5, 50];
-  const pool = new Array(n5).fill(idx[0]).concat(new Array(n50).fill(idx[1]));
-
+  const n1 = Math.round((nBol * percEsq));
+  // console.log('n1: ', n1);
+  const n0 = nBol - n1;
+  // console.log('n0: ', n0);
+  const idx = [0, 1];
+  const pool = new Array(n0).fill(idx[0]).concat(new Array(n1).fill(idx[1]));
   // console.log(pool.length);
   // console.log('pool', pool);
   
@@ -27,13 +21,12 @@ function game(percentage, rounds, limit) {
     esq[i] = pool[index];
   }
 
-  const p5 = esq.filter(value => value === 5).length / rodadas;
-  const p50 = esq.filter(value => value === 50).length / rodadas;
-
-  console.log('p5', p5, 'p50', p50);
-  console.log('esq', esq);
-  $('#p5').val(p5);
-  $('#p50').val(p50);
+  const p0 = esq.filter(value => value === 0).length / rodadas;
+  const p1 = esq.filter(value => value === 1).length / rodadas;
+  // console.log('p0', p0, 'p1', p1);
+  // console.log('esq', esq);
+  $('#p0').val(p0);
+  $('#p1').val(p1);
   $('#arr').val(esq);
 
 } 
@@ -74,15 +67,25 @@ function displayButtons() {
   $('#loader-block').show(); 
 }
 
-function displayResult(arr, turn) {
+function displayImage(arr, turn, choice) {
+  console.log('arr ', arr[turn], 'choice ', choice)
   // hide buttons
   $('#buttons').hide();
   // hide timer
   $('#loader-block').hide();
-  if (arr[turn] == 5) {
-    $('#prize5-image').show();
-  } else if (arr[turn] == 50) {
-    $('#prize50-image').show();
+  if (choice === 'left') {
+    if (arr[turn] == 0) {
+      $('#prize5-image').show();
+    } else if (arr[turn] == 1) {
+      $('#prize50-image').show();
+    }
+  } 
+  if (choice === 'right') {
+    if (arr[turn] == 0) {
+      $('#prize50-image').show();
+    } else if (arr[turn] == 1) {
+      $('#prize5-image').show();
+    }
   }
   $('#img-display').show();
 
@@ -92,7 +95,6 @@ function displayResult(arr, turn) {
     $('#prize10-image').hide();
     $('#prize50-image').hide();
     $('#prize100-image').hide();
-    displayButtons();
   }, 500);
   
 }
@@ -132,13 +134,17 @@ function play(arr) {
     $('#left').css('border-color', 'blue');
     $('#left').css('color', '#FFF');
     $('#right').css('background-color', '#000');
-    $('#right').css('border', '#000');
+    $('#right').css('border', '#000');      
 
     lefts+=1;
     elapsedTime = Date.now() - startTime;
-    wins+=1;
-    results.push(['left', 50, elapsedTime]);   
-    // console.log('results: ', results);     
+    results.push(['left', arr[turn], elapsedTime]);   
+    displayImage(arr, turn, 'left');
+    if (arr[turn] == 1) {
+      wins+=1;
+    }
+    console.log('results: ', results);     
+
   });
 
  
@@ -150,12 +156,13 @@ function play(arr) {
     $('#left').css('border', '#000');
 
     elapsedTime = Date.now() - startTime;
-    if (arr[turn]===50) {
-      results.push(['right', 5, elapsedTime]);   
+    if (arr[turn] == 1) {
+      results.push(['right', 0, elapsedTime]);   
     } else {
+      results.push(['right', 1, elapsedTime]);   
       wins+=1;
-      results.push(['right', 50, elapsedTime]);   
     }
+    displayImage(arr, turn, 'right');   
     console.log('results: ', results); 
   });
 
@@ -174,14 +181,14 @@ function play(arr) {
   $('button').click(function() {
     if (this.id == 'left' || this.id == 'right') {    
       $('#loader-block').hide();  
-      resetCountdown(timeout);
+      resetCountdown(timeout);    
       setTimeout(function() {
-        console.log('choice ', 'left', ' arr[turn]: ', arr[turn]);
-        displayResult(arr, turn);   
         turn+=1; 
-        console.log('turn ', turn, arr.length, wins);
+        // console.log('turn ', turn, arr.length, wins);
         if (turn === arr.length) {
           endGame(results, arr.length, wins, lefts);
+        } else {
+          displayButtons();
         }
       }, 600);
     }
@@ -198,17 +205,30 @@ function endGame(results, turns, wins, lefts) {
   $('#result-message').text('Fim de Jogo!');
   
   // 0) Juntar os tempos de reação de cada rodada para dar o resultado no final
-  var tot = 0;
+  var totalscore = 0;
   var score = 0;
+  var totalduration = 0;
+  var duration = 0;
+  var sampleData = []
   results.forEach(function(item,index) {
     console.log('item',item);
     // $('#items-list').append('<li>Rodada ' + parseInt(parseInt(index)+1) + ': ' + item + '</li>');
-    tot+=item[2]; 
-    score+=item[1];
+    if (item[1] == 1) {
+      score = 50;
+      totalscore+=50;
+    } else {
+      score = 5;
+      totalscore+=5;
+    }
+    totalduration+=item[2]; 
+    duration = item[2] - duration;
+    sampleData.push({ rodada: index+1, lado: item[1], valor: score, duracao: duration});
   });
 
+  // Sample data (replace this with your actual data)
+  console.log('sampleData', sampleData);  
   // a) Mostrar só o quanto a pessoa ganhou sobre o máximo que ela poderia ter ganhado (número de rodadas x 100).
-  $('#max').text('Pontos: ' + score);
+  $('#max').text('Pontos: ' + totalscore);
 
   // b) Mostrar o aproveitamento percentual quantas vezes ela acertou a nota de 100
   $('#wins').text('Acertos: ' + ((wins/(turns))*100) + '%');
@@ -218,19 +238,13 @@ function endGame(results, turns, wins, lefts) {
   $('#lefts').text('Total Esquerdas: ' + ((lefts/turns)*100) + '%');
   console.log('%lefts: ',lefts);
 
-
-  $('#interval').text('Duração: ' + tot + ' milisegundos');
+  $('#interval').text('Duração: ' + totalduration + ' milisegundos');
 
   // e) Mostrar uma curva de média deslizante com N = 10 rodadas e step de 1 rodada 
   // em um gráfico em que o X é a rodada e o Y é a percentagem que a pessoa escolheu o lado esquerdo                
 
 
-  // Sample data (replace this with your actual data)
-  var sampleData = []
-  results.forEach(function(item,index) {
-    sampleData.push({ rodada: index, lado: item[0], valor: item[1], duracao: item[2]});
-  });
-  console.log('sampleData', sampleData);  
+
   // Event listener for the button click
   const saveButton = document.getElementById("saveButton");
   saveButton.addEventListener("click", function() {
@@ -241,8 +255,6 @@ function endGame(results, turns, wins, lefts) {
   $('#result-button').show();
   $('#result-block').show();
   $('#reset-block').show();
-
-
 }
 
 
