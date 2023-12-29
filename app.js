@@ -46,7 +46,10 @@ app.all('/game', (req, res) => {
     const rounds1 = req.query.rounds1;
     const rounds2 = req.query.rounds2;
     const limit = req.query.limit; 
-    res.render('game2', {percentage, rounds1, rounds2, limit});
+    const wins = req.query.wins;
+    const lefts = req.query.lefts;
+    const results1 = req.query.results;
+    res.render('game2', {percentage, rounds1, rounds2, limit, wins, lefts, results1});
   }
 
 });
@@ -69,7 +72,11 @@ app.post('/play2', (req, res) => {
   const rounds1 = req.body.rounds1;
   const rounds2 = req.body.rounds2;
   const limit = req.body.limit;
-  res.render('play2', {arr, percentage, rounds1, rounds2, limit});
+  
+  const wins = req.query.wins;
+  const lefts = req.query.lefts;
+  const results1 = req.query.results;
+  res.render('play2', {arr, percentage, rounds1, rounds2, limit, wins, lefts, results1});
 });
 
 

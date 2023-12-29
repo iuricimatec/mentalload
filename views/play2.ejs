@@ -7,7 +7,7 @@
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta2/css/all.min.css" integrity="sha512-YWzhKL2whUzgiheMoBFwW8CKV4qpHQAEuvilg9FAn5VJUDwKZZxkJNuGM4XkWuk94WCrrwslk8yWNGmY1EduTA==" crossorigin="anonymous" referrerpolicy="no-referrer" />
   <link rel="stylesheet" href="/css/styles.css">  
   <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
-  <script src="/js/timer.js"></script>
+
 
 </head>
 <body>
@@ -33,6 +33,9 @@
         <input type="hidden" name="rounds1" id="rounds1" value="<%=rounds1%>">      
         <input type="hidden" name="rounds2" id="rounds2" value="<%=rounds2%>">      
         <input type="hidden" name="limit" id="limit" value="<%=limit%>">
+        <input type="hidden" name="wins" id="wins" value="<%= wins%>">  
+        <input type="hidden" name="lefts" id="lefts" value="<%= lefts%>">  
+        <input type="hidden" name="results1" id="results1" value="<%= results1%>">  
         <button class="button" id="game"><i class="fa-solid fa-play" style="font-size:xx-large; color: #000000;"></i></button>
       </form>
       <p>Clique para reiniciar</p>      
@@ -68,7 +71,6 @@
 
   </div>
 
-  <script src="/js/tracking.js"></script> 
   <script src="/js/utils.js"></script>
   <script>
     $(document).ready(function() {
@@ -76,7 +78,7 @@
       // console.log('timer2: ',document.querySelector('.timer'));
       runTimer(document.querySelector('.timer'),false);
       setTimeout(function() {
-        play(arr);
+        play2(arr);
       },500);
     }); // document block executes on loading page. //
   </script>

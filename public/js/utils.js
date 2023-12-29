@@ -187,6 +187,109 @@ function play(arr) {
         // console.log('turn ', turn, arr.length, wins);
         if (turn === arr.length) {
           endGame(results, arr.length, wins, lefts);
+          window.location.href = '/game?percentage='+percentage.value+'&rounds1='+rounds1.value+'&rounds2='+rounds2.value+'&limit='+limit.value+'&results='+results+'&arr='+arr+'&wins='+wins+'&lefts='+lefts;
+        } else {
+          displayButtons();
+        }
+      }, 600);
+    }
+  });  
+}
+
+
+
+
+
+
+function play2(arr) {
+  let startTime = Date.now();
+  let elapsedTime = 0;
+
+  console.log(startTime);
+   // start with 1, instead of 0.
+   var turn = 0;
+   var wins = 0;
+   var lefts = 0;
+   // Using objects to store result in pairs
+   var results = [];
+
+    $('#reset-button').on('click', function() {
+      resetGame();
+    });
+
+    $('#save-button').on('click', function() {
+     saveGame();
+    });
+
+    $('#game').on('click', function() {
+      window.location.href = 'game';
+    });
+
+    $('#result-button').on('click', function() {
+      $('#result-list').show();
+    });
+
+    // auxiliary functions
+    // Using vanilla JavaScript
+    $('#left').on('click', function() {
+      $('#left').css('background-color', 'blue')
+      $('#left').css('border-color', 'blue');
+      $('#left').css('color', '#FFF');
+      $('#right').css('background-color', '#000');
+      $('#right').css('border', '#000');      
+
+      lefts+=1;
+      elapsedTime = Date.now() - startTime;
+      results.push(['left', arr[turn], elapsedTime]);   
+      displayImage(arr, turn, 'left');
+      if (arr[turn] == 1) {
+        wins+=1;
+      }
+      console.log('results: ', results);     
+
+    });
+
+  
+    $('#right').on('click', function() {
+      $('#right').css('background-color', 'blue')
+      $('#right').css('border-color', 'blue');
+      $('#right').css('color', '#FFF');
+      $('#left').css('background-color', '#000');
+      $('#left').css('border', '#000');
+
+      elapsedTime = Date.now() - startTime;
+      if (arr[turn] == 1) {
+        results.push(['right', 0, elapsedTime]);   
+      } else {
+        results.push(['right', 1, elapsedTime]);   
+        wins+=1;
+      }
+      displayImage(arr, turn, 'right');   
+      console.log('results: ', results); 
+    });
+
+
+
+
+    // init first timer 5 seconds
+    runTimer(document.querySelector('.timer'),true);
+    timeout = setTimeout(function() {
+      stopTimer(timeout);
+      $('#loader-block').hide();
+      $('#buttons').hide();
+      $('#reset-block').show();    
+    }, 6000);
+
+  $('button').click(function() {
+    if (this.id == 'left' || this.id == 'right') {    
+      $('#loader-block').hide();  
+      resetCountdown(timeout);    
+      setTimeout(function() {
+        turn+=1; 
+        // console.log('turn ', turn, arr.length, wins);
+        if (turn === arr.length) {
+          endGame(results, arr.length, wins, lefts);
+          // window.location.href = '/game?percentage='+percentage.value+'&rounds1='+rounds1.value+'&rounds2='+rounds2.value+'&limit='+limit.value+'&results='+results+'&arr='+arr+'&wins='+wins+'&lefts='+lefts;
         } else {
           displayButtons();
         }
