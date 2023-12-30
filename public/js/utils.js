@@ -67,7 +67,7 @@ function displayButtons() {
   $('#loader-block').show(); 
 }
 
-function displayImage(arr, turn, choice) {
+function displayImage(arr, turn, choice, elapsedTime) {
   console.log('arr ', arr[turn], 'choice ', choice)
   // hide buttons
   $('#buttons').hide();
@@ -75,16 +75,17 @@ function displayImage(arr, turn, choice) {
   $('#loader-block').hide();
   if (choice === 'left') {
     if (arr[turn] == 0) {
-      $('#prize5-image').show();
+      (elapsedTime < limit) ? $('#prize10-image').show() : $('#prize5-image').show();
+
     } else if (arr[turn] == 1) {
-      $('#prize50-image').show();
+      (elapsedTime < limit) ? $('#prize100-image').show() : $('#prize50-image').show();
     }
   } 
   if (choice === 'right') {
     if (arr[turn] == 0) {
-      $('#prize50-image').show();
+      (elapsedTime < limit) ? $('#prize100-image').show() : $('#prize50-image').show();
     } else if (arr[turn] == 1) {
-      $('#prize5-image').show();
+      (elapsedTime < limit) ? $('#prize10-image').show() : $('#prize5-image').show();
     }
   }
   $('#img-display').show();
@@ -139,7 +140,7 @@ function play(arr,stage) {
     lefts+=1;
     elapsedTime = Date.now() - startTime;
     results.push(['left', arr[turn], elapsedTime]);   
-    displayImage(arr, turn, 'left');
+    displayImage(arr, turn, 'left', elapsedTime);
     if (arr[turn] == 1) {
       wins+=1;
     }
@@ -162,7 +163,7 @@ function play(arr,stage) {
       results.push(['right', 1, elapsedTime]);   
       wins+=1;
     }
-    displayImage(arr, turn, 'right');   
+    displayImage(arr, turn, 'right', elapsedTime);   
     console.log('results: ', results); 
   });
 
