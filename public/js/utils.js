@@ -68,13 +68,13 @@ function displayButtons() {
 }
 
 function displayImage(arr, turn, choice, elapsedTime) {
-  console.log('arr ', arr[turn], 'choice ', choice)
+  //console.log('arr ', arr[turn], 'choice ', choice)
   // hide buttons
   $('#buttons').hide();
   // hide timer
   $('#loader-block').hide();
-  console.log('bonus? ', elapsedTime, limit);
-      
+  //console.log('bonus? ', elapsedTime, limit.value);
+  
   if (choice === 'left') {
     if (arr[turn] == 0) {
       if (elapsedTime < limit.value*1000) { 
@@ -106,7 +106,6 @@ function displayImage(arr, turn, choice, elapsedTime) {
     }
   }
   $('#img-display').show();
-
   setTimeout(function() {
     $('#img-display').hide();
     $('#prize5-image').hide();
@@ -114,36 +113,35 @@ function displayImage(arr, turn, choice, elapsedTime) {
     $('#prize50-image').hide();
     $('#prize100-image').hide();
   }, 500);
-  
 }
 
 function play(arr,stage) {
   let startTime = Date.now();
   let elapsedTime = 0;
 
-  console.log(startTime);
-   // start with 1, instead of 0.
-   var turn = 0;
-   var wins = 0;
-   var lefts = 0;
-   // Using objects to store result in pairs
-   var results = [];
+  //console.log(startTime);
+  // start with 1, instead of 0.
+  var turn = 0;
+  var wins = 0;
+  var lefts = 0;
+  // Using objects to store result in pairs
+  var results = [];
 
-    $('#reset-button').on('click', function() {
-      resetGame();
-    });
+  $('#reset-button').on('click', function() {
+    resetGame();
+  });
 
-    $('#save-button').on('click', function() {
-     saveGame();
-    });
+  $('#save-button').on('click', function() {
+    saveGame();
+  });
 
-    $('#game').on('click', function() {
-      window.location.href = 'game';
-    });
+  $('#game').on('click', function() {
+    window.location.href = 'game';
+  });
 
-    $('#result-button').on('click', function() {
-      $('#result-list').show();
-    });
+  $('#result-button').on('click', function() {
+    $('#result-list').show();
+  });
 
   // auxiliary functions
   // Using vanilla JavaScript
@@ -155,14 +153,13 @@ function play(arr,stage) {
     $('#right').css('border', '#000');      
 
     lefts+=1;
-    elapsedTime = Date.now() - startTime;
-    results.push(['left', arr[turn], elapsedTime]);   
+    elapsedTime = (Date.now() - startTime) - elapsedTime;
+    results.push(['left', parseInt(arr[turn]), elapsedTime]);   
     displayImage(arr, turn, 'left', elapsedTime);
     if (arr[turn] == 1) {
       wins+=1;
     }
-    console.log('results: ', results);     
-
+    //console.log('results: ', results);     
   });
 
  
@@ -181,7 +178,7 @@ function play(arr,stage) {
       wins+=1;
     }
     displayImage(arr, turn, 'right', elapsedTime);   
-    console.log('results: ', results); 
+    //console.log('results: ', results); 
   });
 
 
@@ -205,13 +202,16 @@ function play(arr,stage) {
         // console.log('turn ', turn, arr.length, wins);
         if (turn === arr.length) {
           if (stage == 0) {
-            window.location.href = '/game?percentage='+percentage.value+'&rounds1='+rounds1.value+'&rounds2='+rounds2.value+'&limit='+limit.value+'&results='+results+'&arr='+arr+'&wins='+wins+'&lefts='+lefts;
+            if (parseInt(rounds2.value) > 0) {
+              window.location.href = '/game?percentage='+percentage.value+'&rounds1='+rounds1.value+'&rounds2='+rounds2.value+'&limit='+limit.value+'&results='+results+'&arr='+arr+'&wins='+wins+'&lefts='+lefts;
+            } else {
+              endGame(results, results.length, parseInt(wins), parseInt(lefts), elapsedTime);
+            } 
           }
           if (stage == 1) {
-            console.log('WINS ', $('#wins1').val(), wins);
-            console.log('results ', results);
-            
-            
+            // console.log('WINS ', $('#wins1').val(), wins);
+            // console.log('results ', results);
+                        
             // Split the string into an array of individual values
             const parts = $('#results1').val().split(',');
 
@@ -259,7 +259,7 @@ function endGame(results, turns, wins, lefts, elapsedTime) {
   var duration = 0;
   var sampleData = []
   results.forEach(function(item,index) {
-    console.log('item',item);
+    // console.log('item',item);
     // $('#items-list').append('<li>Rodada ' + parseInt(parseInt(index)+1) + ': ' + item + '</li>');
     if (item[1] == 1) {
       if (elapsedTime < limit.value*1000 ) {
@@ -284,17 +284,17 @@ function endGame(results, turns, wins, lefts, elapsedTime) {
   });
 
   // Sample data (replace this with your actual data)
-  console.log('sampleData', sampleData);  
+  //console.log('sampleData', sampleData);  
   // a) Mostrar só o quanto a pessoa ganhou sobre o máximo que ela poderia ter ganhado (número de rodadas x 100).
   $('#max').text('Pontos: ' + totalscore);
 
   // b) Mostrar o aproveitamento percentual quantas vezes ela acertou a nota de 100
   $('#wins').text('Acertos: ' + ((wins/(turns))*100) + '%');
-  console.log('wins: ', wins);
+  //console.log('wins: ', wins);
 
   // c) Mostrar quantas vezes ela escolheu o lado esquerdo em percentual
   $('#lefts').text('Total Esquerdas: ' + ((lefts/turns)*100) + '%');
-  console.log('%lefts: ',lefts);
+  //console.log('%lefts: ',lefts);
 
   $('#interval').text('Duração: ' + totalduration + ' milisegundos');
 
