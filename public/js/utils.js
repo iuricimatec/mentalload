@@ -73,19 +73,36 @@ function displayImage(arr, turn, choice, elapsedTime) {
   $('#buttons').hide();
   // hide timer
   $('#loader-block').hide();
+  console.log('bonus? ', elapsedTime, limit);
+      
   if (choice === 'left') {
     if (arr[turn] == 0) {
-      (elapsedTime < limit) ? $('#prize10-image').show() : $('#prize5-image').show();
-
+      if (elapsedTime < limit.value*1000) { 
+        $('#prize10-image').show();
+      } else {
+        $('#prize5-image').show();
+      }
     } else if (arr[turn] == 1) {
-      (elapsedTime < limit) ? $('#prize100-image').show() : $('#prize50-image').show();
+      if (elapsedTime < limit.value*1000) {
+        $('#prize100-image').show();
+      } else {
+        $('#prize50-image').show();
+      }
     }
   } 
   if (choice === 'right') {
     if (arr[turn] == 0) {
-      (elapsedTime < limit) ? $('#prize100-image').show() : $('#prize50-image').show();
+      if (elapsedTime < limit.value*1000) {
+        $('#prize100-image').show();
+      } else {
+        $('#prize50-image').show();
+      }
     } else if (arr[turn] == 1) {
-      (elapsedTime < limit) ? $('#prize10-image').show() : $('#prize5-image').show();
+      if (elapsedTime < limit.value*1000) {
+        $('#prize10-image').show();
+      } else {
+        $('#prize5-image').show();
+      }
     }
   }
   $('#img-display').show();
@@ -213,7 +230,7 @@ function play(arr,stage) {
 
 
 
-            endGame([...triples, ...results], [...triples, ...results].length, parseInt($('#wins1').val()) + parseInt(wins), parseInt($('#lefts1').val()) + parseInt(lefts));
+            endGame([...triples, ...results], [...triples, ...results].length, parseInt($('#wins1').val()) + parseInt(wins), parseInt($('#lefts1').val()) + parseInt(lefts), elapsedTime);
           }
         } else {
           displayButtons();
@@ -226,7 +243,7 @@ function play(arr,stage) {
 
 
 
-function endGame(results, turns, wins, lefts) {
+function endGame(results, turns, wins, lefts, elapsedTime) {
   //
   // Finish 1st stage and start 2nd stage to increase mental load
   //
@@ -245,11 +262,21 @@ function endGame(results, turns, wins, lefts) {
     console.log('item',item);
     // $('#items-list').append('<li>Rodada ' + parseInt(parseInt(index)+1) + ': ' + item + '</li>');
     if (item[1] == 1) {
-      score = 50;
-      totalscore+=50;
+      if (elapsedTime < limit.value*1000 ) {
+        score = 100;
+        totalscore+=100;
+      } else {
+        score = 50;
+        totalscore+=50;
+      }
     } else {
-      score = 5;
-      totalscore+=5;
+      if (elapsedTime < limit.value*1000 ) {
+        score = 10;
+        totalscore+=10;
+      } else {
+        score = 5;
+        totalscore+=5;
+      }
     }
     totalduration+=item[2]; 
     duration = Math.abs(item[2] - duration);
