@@ -6,7 +6,7 @@
   <link rel="icon" type="image/png" sizes="64x64" href="/icons8-brain-64.png">
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta2/css/all.min.css" integrity="sha512-YWzhKL2whUzgiheMoBFwW8CKV4qpHQAEuvilg9FAn5VJUDwKZZxkJNuGM4XkWuk94WCrrwslk8yWNGmY1EduTA==" crossorigin="anonymous" referrerpolicy="no-referrer" />
   <link rel="stylesheet" href="/css/styles.css">  
-  <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+  <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script> 
 </head>
 <body>
   <div id="container" class="container">
@@ -42,7 +42,7 @@
     </div>
 
     <div id="play-console">
-      <p>Rodada: <span id="round">1</span> / 10</p>
+      <!-- <p>Rodada: <span id="round">1</span> / 10</p> -->
       <div id="buttons" class="buttons">
         <button class="button" id="left" class="button primary"></button>
         <button class="button" id="right" class="button primary"></button>
@@ -56,11 +56,9 @@
       <img id="prize100-image" width="447" src="/images/100reais.png" alt="Prize 100 Image" style="display:none;">
     </div>
 
-    <div id="loader-block" class="loader-block" style="display:block;">
-      <p>Tempo Restante: <span id="timer">6</span> segundos</p>         
-    
-     <div id="timer" style="color:white; display:none;">00:00:00</div>
-     <text x="100" y="100" text-anchor="middle" style="display:block;"><tspan id="timeLeft"></tspan></text>
+    <div id="loader-block" class="loader-block">
+     <div id="timer" style="color:white; display:none;">00:00:00</div> 
+     <text x="100" y="100" text-anchor="middle" style="display:none;"><tspan id="timeLeft"></tspan></text>
 
       <div class="timer animatable">
       <svg>
@@ -70,60 +68,16 @@
       </div>
     </div>      
 
+  </div>
+
+  <script src="/js/utils.js"></script>
   <script>
-    // array containing left solutions
-    const arr = '<%= arr %>'.split(',');
-    // start with 1, instead of 0.
-    var turn = 1;
-    // Using objects to store pairs
-    var results = [];
-
-
-    // Using vanilla JavaScript
-    $('#left').on('click', function() {
-      $('#left').css('background-color', 'blue')
-      $('#left').css('border-color', 'blue');
-      $('#left').css('color', '#FFF');
-      $('#right').css('background-color', '#000');
-      $('#right').css('border', '#000');
-
-      lefts+=1;
-      results.push(['left', arr[turn-1]]);  
-      console.log('results: ', results);      
-    });
-
-
-
-    $('#right').on('click', function() {
-      $('#right').css('background-color', 'blue')
-      $('#right').css('border-color', 'blue');
-      $('#right').css('color', '#FFF');
-      $('#left').css('background-color', '#000');
-      $('#left').css('border', '#000');
-
-      results.push(['right', arr[turn-1]]);   
-      console.log('results: ', results); 
-    });
-
-
-    $('#reset-button').on('click', function() {
-      resetGame();
-    });
-
-    $('#save-button').on('click', function() {
-     saveGame();
-    });
-
-    $('#game').on('click', function() {
-      window.location.href = 'game';
-    });
-
-
-
     $(document).ready(function() {
-      play(arr, turn); 
+      // array containing left solutions
+      const arr = '<%= arr %>'.split(',');
+      // console.log('arr ',arr);
+      play(arr, 0); 
     }); // document block executes on loading page. //
-
   </script>
 </body>
 </html>
