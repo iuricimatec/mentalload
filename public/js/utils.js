@@ -47,13 +47,6 @@ function saveGame() {
   // console.log('saving csv');
 }
  
-function resetCountdown(timeout) {
-  stopTimer(timeout)
-  timeLeft = 6;
-  runTimer(document.querySelector('.timer'),true);
-  
-}
-
 function displayButtons() {
   $('#left').css('background-color', '#FFF');
   $('#left').css('border-color', '#FFF');
@@ -187,7 +180,6 @@ function play(arr,stage) {
   // init first timer 5 seconds
   runTimer(document.querySelector('.timer'),true);
   timeout = setTimeout(function() {
-    stopTimer(timeout);
     $('#loader-block').hide();
     $('#buttons').hide();
     $('#reset-block').show();    
@@ -196,7 +188,7 @@ function play(arr,stage) {
   $('button').click(function() {
     if (this.id == 'left' || this.id == 'right') {    
       $('#loader-block').hide();  
-      resetCountdown(timeout);    
+      clearInterval(timeout);
       setTimeout(function() {
         turn+=1; 
         // console.log('turn ', turn, arr.length, wins);
@@ -234,6 +226,12 @@ function play(arr,stage) {
           }
         } else {
           displayButtons();
+          runTimer(document.querySelector('.timer'),true);  
+          timeout = setTimeout(function() {
+            $('#loader-block').hide();
+            $('#buttons').hide();
+            $('#reset-block').show();    
+          }, 6000);
         }
       }, 600);
     }
@@ -359,9 +357,6 @@ function isTimeLeft() {
   return timeLeft > -1;
 }
 
-function stopTimer(t) {
-  clearInterval(t);
-}
 
 function runTimer(timerElement,clearAnimation) {
   // console.log('Running function runTimer', timerElement);
@@ -382,10 +377,9 @@ function runTimer(timerElement,clearAnimation) {
       timerElement.classList.remove('animatable');
     });
   
-    if(isTimeLeft() || timeLeft === 0){
+    if(isTimeLeft() && timeLeft >= 0){
       const timeRemaining = timeLeft--;
-      // console.log('timeRemaining: ', timeRemaining, 'timeLeft: ', timeLeft);
-      
+      console.log('timeRemaining: ', timeRemaining, 'timeLeft: ', timeLeft);
       // for clockwise animation
       const normalizedTime = (timeRemaining - 6) / 4;
       // for counter clockwise animation

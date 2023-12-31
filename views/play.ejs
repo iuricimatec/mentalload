@@ -49,8 +49,8 @@
     </div>
 
     <div id="loader-block" class="loader-block">
-     <div id="timer" style="color:white; display:none;">00:00:00</div>
-     <text x="100" y="100" text-anchor="middle" style="display:block;"><tspan id="timeLeft"></tspan></text>
+     <div id="timer" style="color:white; display:none;">00:00:00</div> 
+     <text x="100" y="100" text-anchor="middle" style="display:none;"><tspan id="timeLeft"></tspan></text>
 
       <div class="timer animatable">
       <svg>
@@ -67,7 +67,7 @@
     $(document).ready(function() {
       // array containing left solutions
       const arr = '<%= arr %>'.split(',');
-      //console.log('arr ',arr);
+      // console.log('arr ',arr);
       play(arr, 0); 
     }); // document block executes on loading page. //
   </script>
